@@ -42,7 +42,6 @@ export default function SettingsPage() {
       <div className="slide-up">
         <h1 className="text-2xl font-serif text-fridgit-text mb-6">Settings</h1>
 
-        {/* Profile */}
         <div className="bg-white rounded-xl border border-fridgit-border p-4 mb-4">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 rounded-full bg-fridgit-primaryPale flex items-center justify-center">
@@ -55,7 +54,6 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Notifications */}
         {settings && (
           <div className="bg-white rounded-xl border border-fridgit-border p-4 mb-4">
             <h3 className="flex items-center gap-2 font-semibold text-fridgit-text mb-3">
@@ -82,7 +80,6 @@ export default function SettingsPage() {
           </div>
         )}
 
-        {/* Preferences */}
         {settings && (
           <div className="bg-white rounded-xl border border-fridgit-border p-4 mb-4">
             <h3 className="flex items-center gap-2 font-semibold text-fridgit-text mb-3">
@@ -111,7 +108,6 @@ export default function SettingsPage() {
           </div>
         )}
 
-        {/* Actions */}
         <div className="space-y-3">
           <button onClick={saveSettings} disabled={saving}
             className="w-full py-3 rounded-xl bg-fridgit-primary text-white font-semibold hover:bg-fridgit-primaryLight transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
