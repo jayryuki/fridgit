@@ -1,1 +1,28 @@
-ewogICJuYW1lIjogImZyaWRnaXQtY2xpZW50IiwKICAicHJpdmF0ZSI6IHRydWUsCiAgInZlcnNpb24iOiAiMS4wLjAiLAogICJ0eXBlIjogIm1vZHVsZSIsCiAgInNjcmlwdHMiOiB7CiAgICAiZGV2IjogInZpdGUiLAogICAgImJ1aWxkIjogInZpdGUgYnVpbGQiLAogICAgInByZXZpZXciOiAidml0ZSBwcmV2aWV3IgogIH0sCiAgImRlcGVuZGVuY2llcyI6IHsKICAgICJyZWFjdCI6ICJeMTguMi4wIiwKICAgICJyZWFjdC1kb20iOiAiXjE4LjIuMCIsCiAgICAicmVhY3Qtcm91dGVyLWRvbSI6ICJeNi4yMC4wIiwKICAgICJheGlvcyI6ICJeMS42LjIiLAogICAgImZyYW1lci1tb3Rpb24iOiAiXjEwLjE2LjUiLAogICAgImh0bWw1LXFyY29kZSI6ICJeMi4zLjgiLAogICAgImx1Y2lkZS1yZWFjdCI6ICJeMC4yOTQuMCIsCiAgICAicmVhY3QtaG90LXRvYXN0IjogIl4yLjQuMSIKICB9LAogICJkZXZEZXBlbmRlbmNpZXMiOiB7CiAgICAiQHZpdGVqcy9wbHVnaW4tcmVhY3QiOiAiXjQuMi4wIiwKICAgICJ2aXRlIjogIl41LjAuMCIsCiAgICAidGFpbHdpbmRjc3MiOiAiXjMuMy42IiwKICAgICJwb3N0Y3NzIjogIl44LjQuMzIiLAogICAgImF1dG9wcmVmaXhlciI6ICJeMTAuNC4xNiIKICB9Cn0K
+{
+  "name": "fridgit-client",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "axios": "^1.6.2",
+    "framer-motion": "^10.16.5",
+    "html5-qrcode": "^2.3.8",
+    "lucide-react": "^0.294.0",
+    "react-hot-toast": "^2.4.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.0",
+    "vite": "^5.0.0",
+    "tailwindcss": "^3.3.6",
+    "postcss": "^8.4.32",
+    "autoprefixer": "^10.4.16"
+  }
+}
