@@ -21,11 +21,11 @@ CREATE TABLE IF NOT EXISTS items (
     location VARCHAR(20) DEFAULT 'fridge',
     expiry_date DATE,
     calories INTEGER,
-    protein VARCHAR(10),
-    carbs VARCHAR(10),
-    fat VARCHAR(10),
-    emoji VARCHAR(10),
-    color VARCHAR(10),
+    protein VARCHAR(50),
+    carbs VARCHAR(50),
+    fat VARCHAR(50),
+    emoji VARCHAR(32),
+    color VARCHAR(30),
     shared BOOLEAN DEFAULT false,
     owner_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -82,11 +82,31 @@ CREATE TABLE IF NOT EXISTS settings (
 CREATE INDEX IF NOT EXISTS idx_settings_user ON settings(user_id);
 `;
 
+// Widen columns that were too narrow in the original schema
+const MIGRATIONS_SQL = `
+ALTER TABLE items ALTER COLUMN protein TYPE VARCHAR(50);
+ALTER TABLE items ALTER COLUMN carbs TYPE VARCHAR(50);
+ALTER TABLE items ALTER COLUMN fat TYPE VARCHAR(50);
+ALTER TABLE items ALTER COLUMN emoji TYPE VARCHAR(32);
+ALTER TABLE items ALTER COLUMN color TYPE VARCHAR(30);
+`;
+
 export async function initializeSchema() {
   const pool = getPool();
   try {
     await pool.query(SCHEMA_SQL);
     console.log('Database schema initialized successfully');
+
+    // Run migrations (safe to re-run -- ALTER to same type is a no-op)
+    try {
+      await pool.query(MIGRATIONS_SQL);
+    } catch (migErr) {
+      // Ignore if columns don't exist yet (fresh DB handled by CREATE above)
+      if (migErr.code !== '42703') {
+        console.error('Migration warning:', migErr.message);
+      }
+    }
+
     return true;
   } catch (error) {
     console.error('Failed to initialize schema:', error.message);
