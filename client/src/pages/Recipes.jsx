@@ -68,7 +68,6 @@ export default function RecipesPage() {
       <div className="slide-up">
         <h1 className="text-2xl font-serif text-fridgit-text mb-4">Recipe Ideas</h1>
 
-        {/* Ingredient selection */}
         <div className="bg-white rounded-xl border border-fridgit-border p-4 mb-4">
           <h3 className="text-sm font-semibold text-fridgit-textMid mb-2">Select ingredients from your fridge:</h3>
           {itemsLoading ? (
@@ -96,7 +95,6 @@ export default function RecipesPage() {
           )}
         </div>
 
-        {/* Results */}
         <div className="space-y-3">
           {recipes.map(recipe => (
             <div key={recipe.id} className="bg-white rounded-xl border border-fridgit-border overflow-hidden">
