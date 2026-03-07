@@ -2,12 +2,16 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import https from 'https';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const envPath = join(__dirname, '.env');
+const certDir = join(__dirname, '..', 'certs');
+const keyPath = join(certDir, 'server.key');
+const certPath = join(certDir, 'server.crt');
 
 if (fs.existsSync(envPath)) {
   dotenv.config({ path: envPath });
@@ -64,9 +68,24 @@ if (fs.existsSync(envPath)) {
   });
 }
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Fridgit server running on http://0.0.0.0:${PORT}`);
-  if (!fs.existsSync(envPath)) {
-    console.log('No .env found - visit the app to complete setup');
-  }
-});
+// Start HTTPS if certs exist, otherwise fall back to HTTP
+if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+  const sslOptions = {
+    key: fs.readFileSync(keyPath),
+    cert: fs.readFileSync(certPath),
+  };
+  https.createServer(sslOptions, app).listen(PORT, '0.0.0.0', () => {
+    console.log(`Fridgit server running on https://0.0.0.0:${PORT}`);
+    if (!fs.existsSync(envPath)) {
+      console.log('No .env found - visit the app to complete setup');
+    }
+  });
+} else {
+  console.log('No certs found in certs/ - starting HTTP (run certs/generate.sh for HTTPS)');
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Fridgit server running on http://0.0.0.0:${PORT}`);
+    if (!fs.existsSync(envPath)) {
+      console.log('No .env found - visit the app to complete setup');
+    }
+  });
+}
