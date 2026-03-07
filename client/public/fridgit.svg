@@ -1,1 +1,5 @@
-PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzNEN0E1QSIvPgogIDxyZWN0IHg9IjEwIiB5PSI0IiB3aWR0aD0iMTIiIGhlaWdodD0iMjQiIHJ4PSIyIiBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC45Ii8+CiAgPGxpbmUgeDE9IjEwIiB5MT0iMTQiIHgyPSIyMiIgeTI9IjE0IiBzdHJva2U9IiMzRDdBNUEiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPHJlY3QgeD0iMTgiIHk9IjgiIHdpZHRoPSIxLjUiIGhlaWdodD0iNCIgcng9IjAuNzUiIGZpbGw9IiMzRDdBNUEiLz4KICA8cmVjdCB4PSIxOCIgeT0iMTciIHdpZHRoPSIxLjUiIGhlaWdodD0iMyIgcng9IjAuNzUiIGZpbGw9IiMzRDdBNUEiLz4KPC9zdmc+Cg==
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="20" fill="#6366f1"/>
+  <text x="50" y="65" font-family="system-ui" font-size="40" font-weight="bold" fill="white" text-anchor="middle">F</text>
+  <rect x="25" y="72" width="50" height="3" rx="1.5" fill="rgba(255,255,255,0.5)"/>
+</svg>
