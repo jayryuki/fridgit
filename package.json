@@ -1,1 +1,19 @@
-{\n  "name": "fridgit",\n  "version": "1.0.0",\n  "type": "module",\n  "description": "Fridge inventory app with barcode scanning, recipes, and meal planning",\n  "scripts": {\n    "install:all": "npm install && cd server && npm install && cd ../client && npm install",\n    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",\n    "dev:server": "cd server && npm run dev",\n    "dev:client": "cd client && npm run dev",\n    "start": "concurrently \"npm run start:server\" \"npm run start:client\"",\n    "start:server": "cd server && npm start",\n    "start:client": "cd client && npm run dev"\n  },\n  "dependencies": {},\n  "devDependencies": {\n    "concurrently": "^8.2.2"\n  }\n}\n
+{
+  "name": "fridgit",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Fridge inventory app with barcode scanning, recipes, and meal planning",
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
+    "start:server": "cd server && npm start",
+    "start:client": "cd client && npm run dev"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
