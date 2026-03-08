@@ -68,54 +68,74 @@ ipconfig
 
 Then visit `http://YOUR_IP:5173` from your phone or another computer.
 
+### Guest Mode (No Passwords)
+
+By default, Fridgit requires email and password to register and log in. For a more casual household setup where security isn't a concern, you can enable **Guest Mode**:
+
+1. Open `server/.env`
+2. Add `SECURE_ACCESS=false`
+3. Restart the server
+
+In Guest Mode:
+- Users register with **just a name** (no email or password)
+- The login screen becomes a **"Who's using the fridge?"** picker -- tap your name and you're in
+- All other features work exactly the same (items, recipes, sharing, etc.)
+
+To switch back to secure mode, set `SECURE_ACCESS=true` or remove the line entirely (secure is the default).
+
+| SECURE_ACCESS | Behavior |
+|---------------|----------|
+| `true` (default) | Email + password required for registration and login |
+| `false` | Name-only registration, tap-to-login user picker |
+
 ## Project Structure
 
 ```
 fridgit/
-\u251c\u2500\u2500 package.json          # Root scripts (dev, start)
-\u251c\u2500\u2500 server/
-\u2502   \u251c\u2500\u2500 index.js          # Express server (HTTP, port 3000)
-\u2502   \u251c\u2500\u2500 db/
-\u2502   \u2502   \u251c\u2500\u2500 index.js      # PostgreSQL connection pool
-\u2502   \u2502   \u2514\u2500\u2500 schema.js     # Auto-migration (CREATE IF NOT EXISTS)
-\u2502   \u251c\u2500\u2500 routes/
-\u2502   \u2502   \u251c\u2500\u2500 setup.js      # Setup wizard API
-\u2502   \u2502   \u251c\u2500\u2500 auth.js       # Register, login, /me
-\u2502   \u2502   \u251c\u2500\u2500 items.js      # Fridge items CRUD + consume
-\u2502   \u2502   \u251c\u2500\u2500 barcode.js    # Open Food Facts lookup
-\u2502   \u2502   \u251c\u2500\u2500 shopping-list.js
-\u2502   \u2502   \u251c\u2500\u2500 meals.js      # Meal planning
-\u2502   \u2502   \u251c\u2500\u2500 recipes.js    # Spoonacular recipe search
-\u2502   \u2502   \u251c\u2500\u2500 calories.js   # Calorie logging
-\u2502   \u2502   \u2514\u2500\u2500 settings.js   # User preferences
-\u2502   \u251c\u2500\u2500 middleware/auth.js # JWT auth middleware
-\u2502   \u251c\u2500\u2500 services/openfoodfacts.js
-\u2502   \u2514\u2500\u2500 utils/            # JWT + password helpers
-\u251c\u2500\u2500 client/
-\u2502   \u251c\u2500\u2500 index.html
-\u2502   \u251c\u2500\u2500 vite.config.js    # Dev server + API proxy
-\u2502   \u251c\u2500\u2500 tailwind.config.js
-\u2502   \u2514\u2500\u2500 src/
-\u2502       \u251c\u2500\u2500 App.jsx       # Router + setup check
-\u2502       \u251c\u2500\u2500 hooks/useAuth.jsx
-\u2502       \u251c\u2500\u2500 services/api.js
-\u2502       \u251c\u2500\u2500 components/Layout.jsx
-\u2502       \u2514\u2500\u2500 pages/
-\u2502           \u251c\u2500\u2500 Setup.jsx       # First-run wizard
-\u2502           \u251c\u2500\u2500 Login.jsx
-\u2502           \u251c\u2500\u2500 Register.jsx
-\u2502           \u251c\u2500\u2500 Home.jsx        # Dashboard
-\u2502           \u251c\u2500\u2500 Fridge.jsx      # Inventory view
-\u2502           \u251c\u2500\u2500 NewItem.jsx     # Add item + barcode scan
-\u2502           \u251c\u2500\u2500 ShoppingList.jsx
-\u2502           \u251c\u2500\u2500 Recipes.jsx
-\u2502           \u2514\u2500\u2500 Settings.jsx
+├── package.json          # Root scripts (dev, start)
+├── server/
+│   ├── index.js          # Express server (HTTP, port 3000)
+│   ├── db/
+│   │   ├── index.js      # PostgreSQL connection pool
+│   │   └── schema.js     # Auto-migration (CREATE IF NOT EXISTS)
+│   ├── routes/
+│   │   ├── setup.js      # Setup wizard API
+│   │   ├── auth.js       # Register, login, /me
+│   │   ├── items.js      # Fridge items CRUD + consume
+│   │   ├── barcode.js    # Open Food Facts lookup
+│   │   ├── shopping-list.js
+│   │   ├── meals.js      # Meal planning
+│   │   ├── recipes.js    # Spoonacular recipe search
+│   │   ├── calories.js   # Calorie logging
+│   │   └── settings.js   # User preferences
+│   ├── middleware/auth.js # JWT auth middleware
+│   ├── services/openfoodfacts.js
+│   └── utils/            # JWT + password helpers
+├── client/
+│   ├── index.html
+│   ├── vite.config.js    # Dev server + API proxy
+│   ├── tailwind.config.js
+│   └── src/
+│       ├── App.jsx       # Router + setup check
+│       ├── hooks/useAuth.jsx
+│       ├── services/api.js
+│       ├── components/Layout.jsx
+│       └── pages/
+│           ├── Setup.jsx       # First-run wizard
+│           ├── Login.jsx
+│           ├── Register.jsx
+│           ├── Home.jsx        # Dashboard
+│           ├── Fridge.jsx      # Inventory view
+│           ├── NewItem.jsx     # Add item + barcode scan
+│           ├── ShoppingList.jsx
+│           ├── Recipes.jsx
+│           └── Settings.jsx
 ```
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|-------|-----------||
 | Backend | Node.js, Express |
 | Database | PostgreSQL |
 | Frontend | React 18, Vite |
@@ -137,6 +157,8 @@ fridgit/
 | POST | /api/auth/register | No | Create account |
 | POST | /api/auth/login | No | Sign in |
 | GET | /api/auth/me | Yes | Get current user |
+| GET | /api/auth/mode | No | Get auth mode (secure/insecure) |
+| GET | /api/auth/users | No | List users for guest picker (insecure mode only) |
 | GET | /api/items | Yes | List fridge items |
 | POST | /api/items | Yes | Add item |
 | PUT | /api/items/:id | Yes | Update item |
