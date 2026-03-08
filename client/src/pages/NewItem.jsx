@@ -351,11 +351,11 @@ export default function NewItem() {
                 <label className="block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment mb-1">Quantity</label>
                 <div className="flex items-center gap-2">
                   <button type="button" onClick={() => updateForm('quantity', Math.max(1, parseInt(form.quantity) - 1 || 1))}
-                    className="w-9 h-9 rounded-lg bg-fridgit-surfaceAlt dark:bg-dracula-highlight text-fridgit-text dark:text-dracula-fg flex items-center justify-center font-bold">-</button>
+                    className="w-10 h-10 rounded-xl bg-fridgit-surfaceAlt dark:bg-dracula-highlight text-fridgit-text dark:text-dracula-fg flex items-center justify-center font-bold">-</button>
                   <input type="number" min="1" value={form.quantity} onChange={e => updateForm('quantity', e.target.value)}
-                    className="flex-1 text-center px-3 py-2 rounded-lg border border-fridgit-border dark:border-dracula-line bg-fridgit-bg dark:bg-dracula-bg text-fridgit-text dark:text-dracula-fg" />
+                    className="h-10 flex-1 text-center px-3 rounded-xl border border-fridgit-border dark:border-dracula-line bg-fridgit-bg dark:bg-dracula-bg text-fridgit-text dark:text-dracula-fg" />
                   <button type="button" onClick={() => updateForm('quantity', (parseInt(form.quantity) || 0) + 1)}
-                    className="w-9 h-9 rounded-lg bg-fridgit-surfaceAlt dark:bg-dracula-highlight text-fridgit-text dark:text-dracula-fg flex items-center justify-center font-bold">+</button>
+                    className="w-10 h-10 rounded-xl bg-fridgit-surfaceAlt dark:bg-dracula-highlight text-fridgit-text dark:text-dracula-fg flex items-center justify-center font-bold">+</button>
                 </div>
               </div>
               <div>
