@@ -20,10 +20,11 @@ const categoryOptions = [
 ];
 
 const locationOptions = ['fridge', 'freezer', 'pantry', 'counter'];
-const expiryPresets = [
-  { value: 3, unit: 'days', label: '3 days' },
-  { value: 3, unit: 'weeks', label: '3 weeks' },
-  { value: 3, unit: 'months', label: '3 months' },
+const expiryNumberOptions = Array.from({ length: 30 }, (_, i) => i + 1);
+const expiryUnitOptions = [
+  { value: 'days', label: 'Days' },
+  { value: 'weeks', label: 'Weeks' },
+  { value: 'months', label: 'Months' },
 ];
 
 function r1(val) {
@@ -62,8 +63,14 @@ export default function NewItem() {
     location: 'fridge', expiry_date: '', calories: '', protein: '', carbs: '', fat: '',
     emoji: '\u{1F4E6}', color: '#F5F5F5', shared: false, image_url: '', shared_with: [],
   });
+  const [expiryNumber, setExpiryNumber] = useState(3);
+  const [expiryUnit, setExpiryUnit] = useState('days');
 
   const updateForm = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
+
+  useEffect(() => {
+    updateForm('expiry_date', addToDate(expiryNumber, expiryUnit));
+  }, [expiryNumber, expiryUnit]);
 
   const startScan = async () => {
     setMode('scan');
@@ -222,126 +229,155 @@ export default function NewItem() {
       <div className="slide-up">
         <div className="flex items-center gap-3 mb-4">
           <button onClick={() => navigate(-1)} className="p-2 rounded-xl hover:bg-fridgit-surfaceAlt dark:hover:bg-dracula-surface transition-colors"><ArrowLeft size={20} className="text-fridgit-text dark:text-dracula-fg" /></button>
-          <h1 className="text-xl font-serif text-fridgit-text dark:text-dracula-fg">Add Item</h1>
+          <h1 className="text-2xl font-serif text-fridgit-text dark:text-dracula-fg">Add Item</h1>
         </div>
 
-        {/* Scan / Search buttons */}
-        <div className="flex gap-3 mb-4">
-          <button onClick={startScan} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-fridgit-primary dark:border-dracula-green text-fridgit-primary dark:text-dracula-green font-medium hover:bg-fridgit-primaryPale dark:hover:bg-dracula-green/10 transition-colors">
-            <Camera size={20} /> Scan Barcode
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <button onClick={startScan} className="glass-card p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:shadow-fridgit transition-all">
+            <Camera className="w-6 h-6 text-fridgit-primary dark:text-dracula-green" />
+            <span className="text-sm font-medium text-fridgit-text dark:text-dracula-fg">Scan Barcode</span>
           </button>
-          <button onClick={() => setMode('search')} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-fridgit-accent dark:border-dracula-orange text-fridgit-accent dark:text-dracula-orange font-medium hover:bg-fridgit-accentPale dark:hover:bg-dracula-orange/10 transition-colors">
-            <Search size={20} /> Search
+          <button onClick={() => setMode('search')} className="glass-card p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:shadow-fridgit transition-all">
+            <Search className="w-6 h-6 text-fridgit-primary dark:text-dracula-green" />
+            <span className="text-sm font-medium text-fridgit-text dark:text-dracula-fg">Search Food</span>
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="bg-white dark:bg-dracula-surface rounded-xl border border-fridgit-border dark:border-dracula-line p-4 space-y-3">
-            {/* Product image preview */}
-            {form.image_url && (
-              <div className="flex justify-center">
-                <img src={form.image_url} alt={form.name} className="w-24 h-24 rounded-xl object-cover border border-fridgit-border dark:border-dracula-line" />
-              </div>
-            )}
+          {form.image_url && (
+            <div className="glass-card rounded-2xl p-4">
+              <img src={form.image_url} alt={form.name || 'Selected product'} className="w-full h-48 object-cover rounded-xl" />
+            </div>
+          )}
+
+          <div className="glass-card rounded-2xl p-4 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment mb-1">Name *</label>
-              <input type="text" value={form.name} onChange={e => updateForm('name', e.target.value)} required
-                className="w-full px-3 py-2.5 rounded-xl border border-fridgit-border dark:border-dracula-line bg-fridgit-bg dark:bg-dracula-bg text-fridgit-text dark:text-dracula-fg focus:border-fridgit-primary dark:focus:border-dracula-green transition" placeholder="e.g. Whole Milk" />
+              <label className="block text-sm font-medium text-fridgit-text dark:text-dracula-fg mb-2">Item Name</label>
+              <input type="text" value={form.name} onChange={e => updateForm('name', e.target.value)} placeholder="e.g., Greek Yogurt" required
+                className="input-field" />
             </div>
 
-            {/* Category chips */}
-            <div>
-              <label className="block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment mb-2">Category</label>
-              <div className="flex flex-wrap gap-2">
-                {categoryOptions.map(cat => (
-                  <button type="button" key={cat.key} onClick={() => { updateForm('category', cat.key); updateForm('emoji', cat.emoji); }}
-                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      form.category === cat.key ? 'bg-fridgit-primary dark:bg-dracula-green text-white dark:text-dracula-bg' : 'bg-fridgit-surfaceAlt dark:bg-dracula-highlight text-fridgit-textMid dark:text-dracula-fg hover:bg-fridgit-primaryPale dark:hover:bg-dracula-green/20'
-                    }`}>
-                    {cat.emoji} {cat.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Quantity & Location */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment mb-1">Quantity</label>
-                <div className="flex items-center gap-2">
-                  <button type="button" onClick={() => updateForm('quantity', Math.max(1, form.quantity - 1))}
-                    className="w-9 h-9 rounded-lg bg-fridgit-surfaceAlt dark:bg-dracula-highlight text-fridgit-text dark:text-dracula-fg flex items-center justify-center font-bold">-</button>
-                  <span className="w-10 text-center font-semibold text-fridgit-text dark:text-dracula-fg">{form.quantity}</span>
-                  <button type="button" onClick={() => updateForm('quantity', form.quantity + 1)}
-                    className="w-9 h-9 rounded-lg bg-fridgit-surfaceAlt dark:bg-dracula-highlight text-fridgit-text dark:text-dracula-fg flex items-center justify-center font-bold">+</button>
-                </div>
+                <label className="block text-sm font-medium text-fridgit-text dark:text-dracula-fg mb-2">Quantity</label>
+                <input type="number" min="1" value={form.quantity} onChange={e => updateForm('quantity', e.target.value)}
+                  className="input-field" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment mb-1">Location</label>
-                <select value={form.location} onChange={e => updateForm('location', e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl border border-fridgit-border dark:border-dracula-line bg-fridgit-bg dark:bg-dracula-bg text-fridgit-text dark:text-dracula-fg capitalize">
-                  {locationOptions.map(loc => <option key={loc} value={loc} className="capitalize">{loc}</option>)}
+                <label className="block text-sm font-medium text-fridgit-text dark:text-dracula-fg mb-2">Unit</label>
+                <select value={form.unit} onChange={e => updateForm('unit', e.target.value)} className="input-field">
+                  <option value="count">count</option>
+                  <option value="oz">oz</option>
+                  <option value="lb">lb</option>
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                  <option value="ml">ml</option>
+                  <option value="l">l</option>
+                  <option value="cups">cups</option>
+                  <option value="tbsp">tbsp</option>
+                  <option value="tsp">tsp</option>
                 </select>
               </div>
             </div>
 
-            {/* Expiry Date */}
             <div>
-              <label className="block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment mb-1">Expiry Date</label>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {expiryPresets.map((preset) => (
-                  <button
-                    key={preset.label}
-                    type="button"
-                    onClick={() => updateForm('expiry_date', addToDate(preset.value, preset.unit))}
-                    className="px-3 py-1.5 rounded-full text-sm font-medium bg-fridgit-surfaceAlt dark:bg-dracula-highlight text-fridgit-text dark:text-dracula-fg hover:bg-fridgit-border dark:hover:bg-dracula-line transition"
-                  >
-                    {preset.label}
+              <label className="block text-sm font-medium text-fridgit-text dark:text-dracula-fg mb-2">Location</label>
+              <div className="grid grid-cols-4 gap-2">
+                {locationOptions.map(loc => (
+                  <button key={loc} type="button" onClick={() => updateForm('location', loc)}
+                    className={`rounded-xl px-3 py-2 text-sm font-medium capitalize transition-all ${form.location === loc ? 'bg-fridgit-primary dark:bg-dracula-green text-white dark:text-dracula-bg shadow-fridgit' : 'bg-fridgit-surfaceAlt dark:bg-dracula-surface text-fridgit-text dark:text-dracula-fg hover:bg-fridgit-primary/10 dark:hover:bg-dracula-green/10'}`}>
+                    {loc}
                   </button>
                 ))}
               </div>
-              <input type="date" value={form.expiry_date} onChange={e => updateForm('expiry_date', e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl border border-fridgit-border dark:border-dracula-line bg-fridgit-bg dark:bg-dracula-bg text-fridgit-text dark:text-dracula-fg focus:border-fridgit-primary dark:focus:border-dracula-green transition" />
             </div>
 
-            {/* Sharing */}
-            <SharePicker
-              shared={form.shared}
-              sharedWith={form.shared_with}
-              currentUserId={user?.id}
-              onChange={({ shared, sharedWith }) => setForm(prev => ({ ...prev, shared, shared_with: sharedWith }))}
-            />
-          </div>
-
-          {/* Nutrition info */}
-          {(form.calories || form.protein || form.carbs || form.fat) && (
-            <div className="bg-white dark:bg-dracula-surface rounded-xl border border-fridgit-border dark:border-dracula-line p-4">
-              <h3 className="text-sm font-semibold text-fridgit-textMid dark:text-dracula-comment mb-2">Nutrition (per 100g)</h3>
-              <div className="grid grid-cols-4 gap-2 text-center">
-                <div className="bg-fridgit-bg dark:bg-dracula-bg rounded-lg p-2">
-                  <div className="text-sm font-bold text-fridgit-text dark:text-dracula-fg">{form.calories ? Math.round(Number(form.calories)) : '-'}</div>
-                  <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">kcal</div>
+            <div>
+              <label className="block text-sm font-medium text-fridgit-text dark:text-dracula-fg mb-2">Expiry</label>
+              <div className="space-y-3">
+                <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3 sm:grid-cols-[minmax(0,7rem)_minmax(0,1fr)]">
+                  <select
+                    value={expiryNumber}
+                    onChange={e => setExpiryNumber(Number(e.target.value))}
+                    className="input-field"
+                    aria-label="Expiry amount"
+                  >
+                    {expiryNumberOptions.map(value => (
+                      <option key={value} value={value}>{value}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={expiryUnit}
+                    onChange={e => setExpiryUnit(e.target.value)}
+                    className="input-field"
+                    aria-label="Expiry unit"
+                  >
+                    {expiryUnitOptions.map(option => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
                 </div>
-                <div className="bg-fridgit-bg dark:bg-dracula-bg rounded-lg p-2">
-                  <div className="text-sm font-bold text-fridgit-text dark:text-dracula-fg">{r1(form.protein) || '-'}</div>
-                  <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">Protein</div>
-                </div>
-                <div className="bg-fridgit-bg dark:bg-dracula-bg rounded-lg p-2">
-                  <div className="text-sm font-bold text-fridgit-text dark:text-dracula-fg">{r1(form.carbs) || '-'}</div>
-                  <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">Carbs</div>
-                </div>
-                <div className="bg-fridgit-bg dark:bg-dracula-bg rounded-lg p-2">
-                  <div className="text-sm font-bold text-fridgit-text dark:text-dracula-fg">{r1(form.fat) || '-'}</div>
-                  <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">Fat</div>
+                <div className="rounded-2xl border border-fridgit-border dark:border-dracula-line bg-fridgit-surfaceAlt/70 dark:bg-dracula-surface/70 p-3">
+                  <label className="block text-xs font-medium uppercase tracking-wide text-fridgit-textMuted dark:text-dracula-comment mb-2">
+                    Or choose a date
+                  </label>
+                  <input
+                    type="date"
+                    value={form.expiry_date}
+                    onChange={e => updateForm('expiry_date', e.target.value)}
+                    className="input-field"
+                  />
                 </div>
               </div>
             </div>
-          )}
 
-          <button type="submit" disabled={saving}
-            className="w-full py-3 rounded-xl bg-fridgit-primary dark:bg-dracula-green text-white dark:text-dracula-bg font-semibold hover:bg-fridgit-primaryLight dark:hover:bg-dracula-green/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
-            {saving ? <Loader2 size={20} className="animate-spin" /> : <Package size={20} />}
-            Add to Fridge
+            <div>
+              <label className="block text-sm font-medium text-fridgit-text dark:text-dracula-fg mb-2">Category</label>
+              <div className="grid grid-cols-3 gap-2">
+                {categoryOptions.map(cat => (
+                  <button key={cat.key} type="button" onClick={() => {
+                    updateForm('category', cat.key);
+                    updateForm('emoji', cat.emoji);
+                  }}
+                    className={`glass-card rounded-xl px-3 py-2 flex flex-col items-center gap-1 transition-all ${form.category === cat.key ? 'ring-2 ring-fridgit-primary dark:ring-dracula-green shadow-fridgit' : ''}`}>
+                    <span className="text-xl">{cat.emoji}</span>
+                    <span className="text-xs text-fridgit-text dark:text-dracula-fg">{cat.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="glass-card rounded-2xl p-4 space-y-4">
+            <h3 className="font-medium text-fridgit-text dark:text-dracula-fg flex items-center gap-2">
+              <Package className="w-4 h-4" /> Nutrition (optional)
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-fridgit-text dark:text-dracula-fg mb-2">Calories</label>
+                <input type="number" min="0" step="1" value={form.calories} onChange={e => updateForm('calories', e.target.value)} className="input-field" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-fridgit-text dark:text-dracula-fg mb-2">Protein (g)</label>
+                <input type="number" min="0" step="0.1" value={form.protein} onChange={e => updateForm('protein', e.target.value)} className="input-field" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-fridgit-text dark:text-dracula-fg mb-2">Carbs (g)</label>
+                <input type="number" min="0" step="0.1" value={form.carbs} onChange={e => updateForm('carbs', e.target.value)} className="input-field" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-fridgit-text dark:text-dracula-fg mb-2">Fat (g)</label>
+                <input type="number" min="0" step="0.1" value={form.fat} onChange={e => updateForm('fat', e.target.value)} className="input-field" />
+              </div>
+            </div>
+          </div>
+
+          {user && <SharePicker enabled={form.shared} onToggle={(v) => updateForm('shared', v)} selected={form.shared_with} onChange={(ids) => updateForm('shared_with', ids)} />}
+
+          <button type="submit" disabled={saving} className="w-full btn-primary py-4 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+            {saving ? (
+              <span className="inline-flex items-center gap-2"><Loader2 size={18} className="animate-spin" /> Saving...</span>
+            ) : 'Add to Fridge'}
           </button>
         </form>
       </div>
