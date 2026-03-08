@@ -20,11 +20,31 @@ const categoryOptions = [
 ];
 
 const locationOptions = ['fridge', 'freezer', 'pantry', 'counter'];
+const expiryPresets = [
+  { value: 3, unit: 'days', label: '3 days' },
+  { value: 3, unit: 'weeks', label: '3 weeks' },
+  { value: 3, unit: 'months', label: '3 months' },
+];
 
 function r1(val) {
   const n = parseFloat(val);
   if (!val || isNaN(n)) return '';
   return String(Math.round(n * 10) / 10);
+}
+
+function toDateInputValue(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function addToDate(value, unit) {
+  const date = new Date();
+  if (unit === 'days') date.setDate(date.getDate() + value);
+  if (unit === 'weeks') date.setDate(date.getDate() + value * 7);
+  if (unit === 'months') date.setMonth(date.getMonth() + value);
+  return toDateInputValue(date);
 }
 
 export default function NewItem() {
@@ -268,6 +288,18 @@ export default function NewItem() {
             {/* Expiry Date */}
             <div>
               <label className="block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment mb-1">Expiry Date</label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {expiryPresets.map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => updateForm('expiry_date', addToDate(preset.value, preset.unit))}
+                    className="px-3 py-1.5 rounded-full text-sm font-medium bg-fridgit-surfaceAlt dark:bg-dracula-highlight text-fridgit-text dark:text-dracula-fg hover:bg-fridgit-border dark:hover:bg-dracula-line transition"
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
               <input type="date" value={form.expiry_date} onChange={e => updateForm('expiry_date', e.target.value)}
                 className="w-full px-3 py-2.5 rounded-xl border border-fridgit-border dark:border-dracula-line bg-fridgit-bg dark:bg-dracula-bg text-fridgit-text dark:text-dracula-fg focus:border-fridgit-primary dark:focus:border-dracula-green transition" />
             </div>
