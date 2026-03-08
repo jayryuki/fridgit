@@ -6,6 +6,13 @@ import { authMiddleware } from '../middleware/auth.js';
 const router = express.Router();
 router.use(authMiddleware);
 
+function round1(val) {
+  if (val === null || val === undefined || val === '') return null;
+  const n = parseFloat(val);
+  if (isNaN(n)) return val;
+  return String(Math.round(n * 10) / 10);
+}
+
 router.get('/', async (req, res) => {
   try {
     const result = await db.query(
@@ -20,8 +27,8 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { name, barcode, category, quantity, unit, location, expiry_date, calories, protein, carbs, fat, emoji, color, shared } = req.body;
-  let itemData = { name, barcode, category, quantity: quantity || 1, unit: unit || 'count', location: location || 'fridge', expiry_date, calories, protein, carbs, fat, emoji, color, shared: shared || false };
+  const { name, barcode, category, quantity, unit, location, expiry_date, calories, protein, carbs, fat, emoji, color, shared, image_url } = req.body;
+  let itemData = { name, barcode, category, quantity: quantity || 1, unit: unit || 'count', location: location || 'fridge', expiry_date, calories, protein: round1(protein), carbs: round1(carbs), fat: round1(fat), emoji, color, shared: shared || false, image_url: image_url || null };
 
   if (barcode && !calories) {
     const product = await lookupBarcode(barcode);
@@ -33,9 +40,9 @@ router.post('/', async (req, res) => {
 
   try {
     const result = await db.query(
-      `INSERT INTO items (name, barcode, category, quantity, unit, location, expiry_date, calories, protein, carbs, fat, emoji, color, shared, owner_id)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *`,
-      [itemData.name, itemData.barcode, itemData.category, itemData.quantity, itemData.unit, itemData.location, itemData.expiry_date, itemData.calories, itemData.protein, itemData.carbs, itemData.fat, itemData.emoji, itemData.color, itemData.shared, req.user.userId]
+      `INSERT INTO items (name, barcode, category, quantity, unit, location, expiry_date, calories, protein, carbs, fat, emoji, color, shared, image_url, owner_id)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *`,
+      [itemData.name, itemData.barcode, itemData.category, itemData.quantity, itemData.unit, itemData.location, itemData.expiry_date, itemData.calories, itemData.protein, itemData.carbs, itemData.fat, itemData.emoji, itemData.color, itemData.shared, itemData.image_url, req.user.userId]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -46,11 +53,11 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, barcode, category, quantity, unit, location, expiry_date, shared } = req.body;
+  const { name, barcode, category, quantity, unit, location, expiry_date, shared, image_url } = req.body;
   try {
     const result = await db.query(
-      `UPDATE items SET name=COALESCE($1,name), barcode=COALESCE($2,barcode), category=COALESCE($3,category), quantity=COALESCE($4,quantity), unit=COALESCE($5,unit), location=COALESCE($6,location), expiry_date=COALESCE($7,expiry_date), shared=COALESCE($8,shared) WHERE id=$9 AND owner_id=$10 RETURNING *`,
-      [name, barcode, category, quantity, unit, location, expiry_date, shared, id, req.user.userId]
+      `UPDATE items SET name=COALESCE($1,name), barcode=COALESCE($2,barcode), category=COALESCE($3,category), quantity=COALESCE($4,quantity), unit=COALESCE($5,unit), location=COALESCE($6,location), expiry_date=$7, shared=COALESCE($8,shared), image_url=COALESCE($9,image_url) WHERE id=$10 AND owner_id=$11 RETURNING *`,
+      [name, barcode, category, quantity, unit, location, expiry_date || null, shared, image_url, id, req.user.userId]
     );
     if (result.rows.length === 0) return res.status(404).json({ error: 'Item not found' });
     res.json(result.rows[0]);
