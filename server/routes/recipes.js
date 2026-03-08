@@ -12,7 +12,7 @@ router.get('/suggestions', async (req, res) => {
   }
   try {
     const response = await fetch(
-      `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredients)}&number=10&apiKey=${apiKey}`
+      `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredients)}&number=30&apiKey=${apiKey}`
     );
     if (!response.ok) {
       const errText = await response.text();
