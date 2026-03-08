@@ -24,6 +24,12 @@ export async function searchProducts(query, limit = 10) {
   }
 }
 
+function round1(val) {
+  const n = parseFloat(val);
+  if (isNaN(n)) return '0';
+  return String(Math.round(n * 10) / 10);
+}
+
 export function normalizeProduct(product) {
   const nutriments = product.nutriments || {};
   const categories = product.categories_tags || [];
@@ -44,12 +50,12 @@ export function normalizeProduct(product) {
     barcode: product.code,
     category,
     calories: Math.round(nutriments['energy-kcal_100g'] || 0),
-    protein: String(nutriments.proteins_100g || 0),
-    carbs: String(nutriments.carbohydrates_100g || 0),
-    fat: String(nutriments.fat_100g || 0),
+    protein: round1(nutriments.proteins_100g || 0),
+    carbs: round1(nutriments.carbohydrates_100g || 0),
+    fat: round1(nutriments.fat_100g || 0),
     emoji: emojiMap[category] || '\u{1F4E6}',
     color: colorMap[category] || '#F5F5F5',
     brand: product.brands || '',
-    image_url: product.image_url || null
+    image_url: product.image_url || product.image_front_url || product.image_front_small_url || null
   };
 }
