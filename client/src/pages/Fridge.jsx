@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
-import { Search, Plus, Trash2, X, Save, Loader2 } from 'lucide-react';
+import { Search, Plus, Trash2, X, Save, Loader2, Users, Globe } from 'lucide-react';
 import api from '../services/api.js';
 import toast from 'react-hot-toast';
+import { useAuth } from '../hooks/useAuth.jsx';
+import SharePicker from '../components/SharePicker.jsx';
 
 const categories = [
   { key: 'all', label: 'All', emoji: '\u{1F3E0}' },
@@ -22,6 +24,7 @@ const locationOptions = ['fridge', 'freezer', 'pantry', 'counter'];
 
 export default function FridgePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
@@ -63,20 +66,29 @@ export default function FridgePage() {
     } catch { toast.error('Failed to consume'); }
   };
 
-  const openDetail = (item) => {
+  const openDetail = async (item) => {
     setSelected(item);
     setEditForm({
       shared: item.shared || false,
       location: item.location || 'fridge',
       expiry_date: item.expiry_date ? item.expiry_date.split('T')[0] : '',
+      shared_with: [],
     });
+    // Fetch current per-user shares
+    try {
+      const res = await api.get(`/items/${item.id}/shares`);
+      setEditForm(prev => ({ ...prev, shared_with: res.data }));
+    } catch {}
   };
 
   const saveDetail = async () => {
     if (!selected) return;
     setSaving(true);
     try {
-      const res = await api.put(`/items/${selected.id}`, editForm);
+      const res = await api.put(`/items/${selected.id}`, {
+        ...editForm,
+        shared_with: editForm.shared_with,
+      });
       setItems(items.map(i => i.id === selected.id ? res.data : i));
       setSelected(res.data);
       toast.success('Item updated');
@@ -101,6 +113,17 @@ export default function FridgePage() {
     if (days <= 0) return <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-fridgit-dangerPale dark:bg-dracula-red/20 text-fridgit-danger dark:text-dracula-red">Expired</span>;
     if (days <= 3) return <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-fridgit-accentPale dark:bg-dracula-orange/20 text-fridgit-accent dark:text-dracula-orange">{days}d left</span>;
     if (days <= 7) return <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-fridgit-primaryPale dark:bg-dracula-green/20 text-fridgit-primary dark:text-dracula-green">{days}d left</span>;
+    return null;
+  };
+
+  const getShareBadge = (item) => {
+    if (item.shared) {
+      return (
+        <span className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-fridgit-primaryPale dark:bg-dracula-purple/20 text-fridgit-primary dark:text-dracula-purple">
+          <Globe size={10} /> All
+        </span>
+      );
+    }
     return null;
   };
 
@@ -155,7 +178,10 @@ export default function FridgePage() {
                   ) : (
                     <span className="text-3xl">{item.emoji || '\u{1F4E6}'}</span>
                   )}
-                  {getExpiryBadge(item.expiry_date)}
+                  <div className="flex flex-col items-end gap-1">
+                    {getExpiryBadge(item.expiry_date)}
+                    {getShareBadge(item)}
+                  </div>
                 </div>
                 <h3 className="font-medium text-fridgit-text dark:text-dracula-fg text-sm truncate">{item.name}</h3>
                 <p className="text-xs text-fridgit-textMuted dark:text-dracula-comment mt-0.5">Qty: {item.quantity} {item.unit}</p>
@@ -231,14 +257,13 @@ export default function FridgePage() {
 
             {/* Editable fields */}
             <div className="space-y-3 mb-4">
-              {/* Shared toggle */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-fridgit-textMid dark:text-dracula-comment">Shared with household</span>
-                <button type="button" onClick={() => setEditForm(prev => ({ ...prev, shared: !prev.shared }))}
-                  className={`w-12 h-6 rounded-full transition-colors ${editForm.shared ? 'bg-fridgit-primary dark:bg-dracula-green' : 'bg-fridgit-border dark:bg-dracula-line'}`}>
-                  <div className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${editForm.shared ? 'translate-x-6' : 'translate-x-0.5'}`} />
-                </button>
-              </div>
+              {/* Sharing */}
+              <SharePicker
+                shared={editForm.shared}
+                sharedWith={editForm.shared_with || []}
+                currentUserId={user?.id}
+                onChange={({ shared, sharedWith }) => setEditForm(prev => ({ ...prev, shared, shared_with: sharedWith }))}
+              />
 
               {/* Location */}
               <div>
