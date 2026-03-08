@@ -35,6 +35,12 @@ CREATE INDEX IF NOT EXISTS idx_items_owner ON items(owner_id);
 CREATE INDEX IF NOT EXISTS idx_items_barcode ON items(barcode);
 CREATE INDEX IF NOT EXISTS idx_items_expiry ON items(expiry_date);
 
+CREATE TABLE IF NOT EXISTS item_shares (
+    item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (item_id, user_id)
+);
+
 CREATE TABLE IF NOT EXISTS meals (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -102,6 +108,11 @@ EXCEPTION WHEN others THEN NULL; END $$;
 DO $$ BEGIN
   ALTER TABLE items ADD COLUMN image_url TEXT;
 EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+CREATE TABLE IF NOT EXISTS item_shares (
+    item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (item_id, user_id)
+);
 `;
 
 export async function initializeSchema() {
