@@ -1,1 +1,98 @@
-aW1wb3J0IGV4cHJlc3MgZnJvbSAnZXhwcmVzcyc7CmltcG9ydCBkb3RlbnYgZnJvbSAnZG90ZW52JzsKZG90ZW52LmNvbmZpZygpOwoKY29uc3Qgcm91dGVyID0gZXhwcmVzcy5Sb3V0ZXIoKTsKCnJvdXRlci5nZXQoJy9zdWdnZXN0aW9ucycsIGFzeW5jIChyZXEsIHJlcykgPT4gewogIGNvbnN0IHsgaW5ncmVkaWVudHMgfSA9IHJlcS5xdWVyeTsKICBjb25zdCBhcGlLZXkgPSBwcm9jZXNzLmVudi5TUE9PTkFDVUxBUl9BUElfS0VZOwogIGlmICghYXBpS2V5KSB7CiAgICByZXR1cm4gcmVzLnN0YXR1cyg1MDMpLmpzb24oeyBlcnJvcjogJ1Nwb29uYWN1bGFyIEFQSSBrZXkgbm90IGNvbmZpZ3VyZWQuIEFkZCBpdCBpbiBTZXR0aW5ncyBvciBkdXJpbmcgc2V0dXAuJyB9KTsKICB9CiAgdHJ5IHsKICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goCiAgICAgIGBodHRwczovL2FwaS5zcG9vbmFjdWxhci5jb20vcmVjaXBlcy9maW5kQnlJbmdyZWRpZW50cz9pbmdyZWRpZW50cz0ke2VuY29kZVVSSUNvbXBvbmVudChpbmdyZWRpZW50cyl9Jm51bWJlcj0xNSZhcGlLZXk9JHthcGlLZXl9YAogICAgKTsKICAgIGlmICghcmVzcG9uc2Uub2spIHsKICAgICAgY29uc3QgZXJyVGV4dCA9IGF3YWl0IHJlc3BvbnNlLnRleHQoKTsKICAgICAgcmV0dXJuIHJlcy5zdGF0dXMocmVzcG9uc2Uuc3RhdHVzKS5qc29uKHsgZXJyb3I6IGBTcG9vbmFjdWxhciBlcnJvcjogJHtlcnJUZXh0fWAgfSk7CiAgICB9CiAgICBjb25zdCBkYXRhID0gYXdhaXQgcmVzcG9uc2UuanNvbigpOwogICAgcmVzLmpzb24oZGF0YSk7CiAgfSBjYXRjaCAoZXJyb3IpIHsKICAgIGNvbnNvbGUuZXJyb3IoJ1JlY2lwZSBzdWdnZXN0aW9ucyBlcnJvcjonLCBlcnJvcik7CiAgICByZXMuc3RhdHVzKDUwMCkuanNvbih7IGVycm9yOiAnRmFpbGVkIHRvIGZldGNoIHJlY2lwZXMnIH0pOwogIH0KfSk7Cgpyb3V0ZXIucG9zdCgnL2J1bGstaW5mbycsIGFzeW5jIChyZXEsIHJlcykgPT4gewogIGNvbnN0IGFwaUtleSA9IHByb2Nlc3MuZW52LlNQT09OQUNVTEFSX0FQSV9LRVk7CiAgY29uc3QgeyBpZHMgfSA9IHJlcS5ib2R5IHx8IHt9OwoKICBpZiAoIWFwaUtleSkgewogICAgcmV0dXJuIHJlcy5zdGF0dXMoNTAzKS5qc29uKHsgZXJyb3I6ICdTcG9vbmFjdWxhciBBUEkga2V5IG5vdCBjb25maWd1cmVkJyB9KTsKICB9CgogIGlmICghQXJyYXkuaXNBcnJheShpZHMpIHx8IGlkcy5sZW5ndGggPT09IDApIHsKICAgIHJldHVybiByZXMuc3RhdHVzKDQwMCkuanNvbih7IGVycm9yOiAnaWRzIG11c3QgYmUgYSBub24tZW1wdHkgYXJyYXknIH0pOwogIH0KCiAgdHJ5IHsKICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goCiAgICAgIGBodHRwczovL2FwaS5zcG9vbmFjdWxhci5jb20vcmVjaXBlcy9pbmZvcm1hdGlvbkJ1bGs/aWRzPSR7ZW5jb2RlVVJJQ29tcG9uZW50KGlkcy5qb2luKCcsJykpfSZhcGlLZXk9JHthcGlLZXl9YAogICAgKTsKCiAgICBpZiAoIXJlc3BvbnNlLm9rKSB7CiAgICAgIGNvbnN0IGVyclRleHQgPSBhd2FpdCByZXNwb25zZS50ZXh0KCk7CiAgICAgIHJldHVybiByZXMuc3RhdHVzKHJlc3BvbnNlLnN0YXR1cykuanNvbih7IGVycm9yOiBgU3Bvb25hY3VsYXIgZXJyb3I6ICR7ZXJyVGV4dH1gIH0pOwogICAgfQoKICAgIGNvbnN0IGRhdGEgPSBhd2FpdCByZXNwb25zZS5qc29uKCk7CiAgICBjb25zdCBzbGltID0gZGF0YS5tYXAocmVjaXBlID0+ICh7CiAgICAgIGlkOiByZWNpcGUuaWQsCiAgICAgIHJlYWR5SW5NaW51dGVzOiByZWNpcGUucmVhZHlJbk1pbnV0ZXMsCiAgICAgIGN1aXNpbmVzOiBBcnJheS5pc0FycmF5KHJlY2lwZS5jdWlzaW5lcykgPyByZWNpcGUuY3Vpc2luZXMgOiBbXSwKICAgIH0pKTsKCiAgICByZXMuanNvbihzbGltKTsKICB9IGNhdGNoIChlcnJvcikgewogICAgY29uc29sZS5lcnJvcignUmVjaXBlIGJ1bGsgaW5mbyBlcnJvcjonLCBlcnJvcik7CiAgICByZXMuc3RhdHVzKDUwMCkuanNvbih7IGVycm9yOiAnRmFpbGVkIHRvIGZldGNoIHJlY2lwZSBidWxrIGluZm8nIH0pOwogIH0KfSk7Cgpyb3V0ZXIuZ2V0KCcvOmlkJywgYXN5bmMgKHJlcSwgcmVzKSA9PiB7CiAgY29uc3QgYXBpS2V5ID0gcHJvY2Vzcy5lbnYuU1BPT05BQ1VMQVJfQVBJX0tFWTsKICBpZiAoIWFwaUtleSkgewogICAgcmV0dXJuIHJlcy5zdGF0dXMoNTAzKS5qc29uKHsgZXJyb3I6ICdTcG9vbmFjdWxhciBBUEkga2V5IG5vdCBjb25maWd1cmVkJyB9KTsKICB9CiAgdHJ5IHsKICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goCiAgICAgIGBodHRwczovL2FwaS5zcG9vbmFjdWxhci5jb20vcmVjaXBlcy8ke3JlcS5wYXJhbXMuaWR9L2luZm9ybWF0aW9uP2FwaUtleT0ke2FwaUtleX1gCiAgICApOwogICAgaWYgKCFyZXNwb25zZS5vaykgewogICAgICByZXR1cm4gcmVzLnN0YXR1cyhyZXNwb25zZS5zdGF0dXMpLmpzb24oeyBlcnJvcjogJ0ZhaWxlZCB0byBmZXRjaCByZWNpcGUgZGV0YWlscycgfSk7CiAgICB9CiAgICBjb25zdCBkYXRhID0gYXdhaXQgcmVzcG9uc2UuanNvbigpOwogICAgcmVzLmpzb24oZGF0YSk7CiAgfSBjYXRjaCAoZXJyb3IpIHsKICAgIHJlcy5zdGF0dXMoNTAwKS5qc29uKHsgZXJyb3I6ICdGYWlsZWQgdG8gZmV0Y2ggcmVjaXBlJyB9KTsKICB9Cn0pOwoKZXhwb3J0IGRlZmF1bHQgcm91dGVyOwo=
+import express from 'express';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const router = express.Router();
+const apiKey = process.env.SPOONACULAR_API_KEY;
+
+router.get('/suggestions', async (req, res) => {
+  const { ingredients } = req.query;
+
+  if (!apiKey) {
+    return res.status(500).json({ error: 'Spoonacular API key not configured' });
+  }
+
+  if (!ingredients || typeof ingredients !== 'string') {
+    return res.status(400).json({ error: 'ingredients query parameter is required' });
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredients)}&number=15&apiKey=${apiKey}`
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return res.status(response.status).json({ error: `Spoonacular error: ${errorText}` });
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Recipe suggestions error:', error);
+    res.status(500).json({ error: 'Failed to fetch recipe suggestions' });
+  }
+});
+
+router.post('/bulk-info', async (req, res) => {
+  const { ids } = req.body ?? {};
+
+  if (!apiKey) {
+    return res.status(500).json({ error: 'Spoonacular API key not configured' });
+  }
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: 'ids must be a non-empty array' });
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.spoonacular.com/recipes/informationBulk?ids=${encodeURIComponent(ids.join(','))}&apiKey=${apiKey}`
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return res.status(response.status).json({ error: `Spoonacular error: ${errorText}` });
+    }
+
+    const data = await response.json();
+    const slim = data.map((recipe) => ({
+      id: recipe.id,
+      readyInMinutes: recipe.readyInMinutes,
+      cuisines: Array.isArray(recipe.cuisines) ? recipe.cuisines : [],
+    }));
+
+    res.json(slim);
+  } catch (error) {
+    console.error('Recipe bulk info error:', error);
+    res.status(500).json({ error: 'Failed to fetch recipe bulk info' });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  if (!apiKey) {
+    return res.status(500).json({ error: 'Spoonacular API key not configured' });
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.spoonacular.com/recipes/${encodeURIComponent(id)}/information?apiKey=${apiKey}`
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return res.status(response.status).json({ error: `Spoonacular error: ${errorText}` });
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Recipe details error:', error);
+    res.status(500).json({ error: 'Failed to fetch recipe details' });
+  }
+});
+
+export default router;
