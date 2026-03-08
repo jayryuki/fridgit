@@ -240,7 +240,7 @@ export default function RecipesPage() {
           )}
         </div>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {DIFFICULTY_ORDER.map(difficulty => {
             const cuisines = groupedRecipes[difficulty] || {};
             const cuisineEntries = Object.entries(cuisines).sort((a, b) => a[0].localeCompare(b[0]));
