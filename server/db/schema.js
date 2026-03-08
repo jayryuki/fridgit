@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS items (
     emoji VARCHAR(32),
     color VARCHAR(30),
     shared BOOLEAN DEFAULT false,
+    image_url TEXT,
     owner_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -82,13 +83,25 @@ CREATE TABLE IF NOT EXISTS settings (
 CREATE INDEX IF NOT EXISTS idx_settings_user ON settings(user_id);
 `;
 
-// Widen columns that were too narrow in the original schema
-const MIGRATIONS_SQL = `
-ALTER TABLE items ALTER COLUMN protein TYPE VARCHAR(50);
-ALTER TABLE items ALTER COLUMN carbs TYPE VARCHAR(50);
-ALTER TABLE items ALTER COLUMN fat TYPE VARCHAR(50);
-ALTER TABLE items ALTER COLUMN emoji TYPE VARCHAR(32);
-ALTER TABLE items ALTER COLUMN color TYPE VARCHAR(30);
+const MIGRATION_SQL = `
+DO $$ BEGIN
+  ALTER TABLE items ALTER COLUMN protein TYPE VARCHAR(50);
+EXCEPTION WHEN others THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE items ALTER COLUMN carbs TYPE VARCHAR(50);
+EXCEPTION WHEN others THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE items ALTER COLUMN fat TYPE VARCHAR(50);
+EXCEPTION WHEN others THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE items ALTER COLUMN emoji TYPE VARCHAR(32);
+EXCEPTION WHEN others THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE items ALTER COLUMN color TYPE VARCHAR(30);
+EXCEPTION WHEN others THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE items ADD COLUMN image_url TEXT;
+EXCEPTION WHEN duplicate_column THEN NULL; END $$;
 `;
 
 export async function initializeSchema() {
@@ -96,17 +109,8 @@ export async function initializeSchema() {
   try {
     await pool.query(SCHEMA_SQL);
     console.log('Database schema initialized successfully');
-
-    // Run migrations (safe to re-run -- ALTER to same type is a no-op)
-    try {
-      await pool.query(MIGRATIONS_SQL);
-    } catch (migErr) {
-      // Ignore if columns don't exist yet (fresh DB handled by CREATE above)
-      if (migErr.code !== '42703') {
-        console.error('Migration warning:', migErr.message);
-      }
-    }
-
+    await pool.query(MIGRATION_SQL);
+    console.log('Schema check complete');
     return true;
   } catch (error) {
     console.error('Failed to initialize schema:', error.message);
