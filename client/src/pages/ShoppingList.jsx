@@ -95,7 +95,7 @@ export default function ShoppingList() {
         ) : (
           <>
             {/* Unpurchased */}
-            <div className="space-y-2 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
               {unpurchased.map(item => (
                 <div key={item.id} className="bg-white rounded-xl border border-fridgit-border p-3 flex items-center gap-3">
                   <button onClick={() => togglePurchased(item)} className="w-6 h-6 rounded-full border-2 border-fridgit-border hover:border-fridgit-primary transition-colors flex-shrink-0" />
@@ -118,7 +118,7 @@ export default function ShoppingList() {
                   <h3 className="text-sm font-semibold text-fridgit-textMuted">Purchased ({purchased.length})</h3>
                   <button onClick={clearPurchased} className="text-xs text-fridgit-danger font-medium hover:underline">Clear all</button>
                 </div>
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {purchased.map(item => (
                     <div key={item.id} className="bg-fridgit-surfaceAlt rounded-xl border border-fridgit-border p-3 flex items-center gap-3 opacity-60">
                       <button onClick={() => togglePurchased(item)} className="w-6 h-6 rounded-full bg-fridgit-primary flex items-center justify-center flex-shrink-0">
