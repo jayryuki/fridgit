@@ -16,10 +16,21 @@ router.get('/mode', (req, res) => {
   res.json({ secure: isSecure() });
 });
 
-// In insecure mode: returns all users for the picker screen
+// Returns all users -- works in both secure and insecure mode.
+// In secure mode, requires a valid auth token.
 router.get('/users', async (req, res) => {
   if (isSecure()) {
-    return res.status(403).json({ error: 'Not available in secure mode' });
+    // Require auth in secure mode
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    try {
+      const { verifyToken } = await import('../utils/jwt.js');
+      verifyToken(authHeader.split(' ')[1]);
+    } catch {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
   }
   try {
     const result = await db.query(
