@@ -26,6 +26,42 @@ router.get('/suggestions', async (req, res) => {
   }
 });
 
+router.post('/bulk-info', async (req, res) => {
+  const apiKey = process.env.SPOONACULAR_API_KEY;
+  const { ids } = req.body || {};
+
+  if (!apiKey) {
+    return res.status(503).json({ error: 'Spoonacular API key not configured' });
+  }
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: 'ids must be a non-empty array' });
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.spoonacular.com/recipes/informationBulk?ids=${encodeURIComponent(ids.join(','))}&apiKey=${apiKey}`
+    );
+
+    if (!response.ok) {
+      const errText = await response.text();
+      return res.status(response.status).json({ error: `Spoonacular error: ${errText}` });
+    }
+
+    const data = await response.json();
+    const slim = data.map(recipe => ({
+      id: recipe.id,
+      readyInMinutes: recipe.readyInMinutes,
+      cuisines: Array.isArray(recipe.cuisines) ? recipe.cuisines : [],
+    }));
+
+    res.json(slim);
+  } catch (error) {
+    console.error('Recipe bulk info error:', error);
+    res.status(500).json({ error: 'Failed to fetch recipe bulk info' });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   const apiKey = process.env.SPOONACULAR_API_KEY;
   if (!apiKey) {
