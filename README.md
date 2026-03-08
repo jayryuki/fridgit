@@ -135,7 +135,7 @@ fridgit/
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------||
+|-------|-----------|
 | Backend | Node.js, Express |
 | Database | PostgreSQL |
 | Frontend | React 18, Vite |
@@ -157,8 +157,6 @@ fridgit/
 | POST | /api/auth/register | No | Create account |
 | POST | /api/auth/login | No | Sign in |
 | GET | /api/auth/me | Yes | Get current user |
-| GET | /api/auth/mode | No | Get auth mode (secure/insecure) |
-| GET | /api/auth/users | No | List users for guest picker (insecure mode only) |
 | GET | /api/items | Yes | List fridge items |
 | POST | /api/items | Yes | Add item |
 | PUT | /api/items/:id | Yes | Update item |
