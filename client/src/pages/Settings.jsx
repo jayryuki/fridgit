@@ -55,7 +55,7 @@ export default function SettingsPage() {
 
   return (
     <Layout>
-      <div className="slide-up">
+      <div className="slide-up max-w-3xl mx-auto">
         <h1 className="text-2xl font-serif text-fridgit-text dark:text-dracula-fg mb-6">Settings</h1>
 
         {/* Profile */}
