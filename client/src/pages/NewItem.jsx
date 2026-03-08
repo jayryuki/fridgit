@@ -304,40 +304,50 @@ export default function NewItem() {
                 <div className="grid grid-cols-2 gap-3 mb-3">
                   <div>
                     <div className="text-xs font-medium text-fridgit-textMuted dark:text-dracula-comment mb-2">Number</div>
-                    <div className="h-36 overflow-y-auto rounded-xl border border-fridgit-border dark:border-dracula-line bg-white/80 dark:bg-dracula-surface snap-y snap-mandatory shadow-inner">
-                      {expiryNumberOptions.map((value) => (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => setExpiryNumber(value)}
-                          className={`w-full h-11 px-3 text-sm snap-center transition-colors ${
-                            expiryNumber === value
-                              ? 'bg-fridgit-primary dark:bg-dracula-green text-white dark:text-dracula-bg font-semibold'
-                              : 'text-fridgit-text dark:text-dracula-fg hover:bg-fridgit-surfaceAlt dark:hover:bg-dracula-highlight'
-                          }`}
-                        >
-                          {value}
-                        </button>
-                      ))}
+                    <div className="relative">
+                      <div className="pointer-events-none absolute inset-x-0 top-0 h-8 rounded-t-xl bg-gradient-to-b from-fridgit-bg dark:from-dracula-bg to-transparent z-10" />
+                      <div className="pointer-events-none absolute inset-x-2 top-1/2 -translate-y-1/2 h-11 rounded-xl border border-fridgit-primary/20 dark:border-dracula-green/25 bg-fridgit-primary/5 dark:bg-dracula-green/10 z-10" />
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 rounded-b-xl bg-gradient-to-t from-fridgit-bg dark:from-dracula-bg to-transparent z-10" />
+                      <div className="h-36 overflow-y-auto rounded-xl border border-fridgit-border dark:border-dracula-line bg-white/80 dark:bg-dracula-surface snap-y snap-mandatory shadow-inner">
+                        {expiryNumberOptions.map((value) => (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => setExpiryNumber(value)}
+                            className={`w-full h-11 px-3 text-sm snap-center transition-all duration-200 ${
+                              expiryNumber === value
+                                ? 'bg-fridgit-primary dark:bg-dracula-green text-white dark:text-dracula-bg font-semibold opacity-100 scale-[1.02]'
+                                : 'text-fridgit-text dark:text-dracula-fg opacity-45 hover:opacity-70 hover:bg-fridgit-surfaceAlt/70 dark:hover:bg-dracula-highlight/70'
+                            }`}
+                          >
+                            {value}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                   <div>
                     <div className="text-xs font-medium text-fridgit-textMuted dark:text-dracula-comment mb-2">Unit</div>
-                    <div className="h-36 overflow-y-auto rounded-xl border border-fridgit-border dark:border-dracula-line bg-white/80 dark:bg-dracula-surface snap-y snap-mandatory shadow-inner">
-                      {expiryUnitOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          type="button"
-                          onClick={() => setExpiryUnit(option.value)}
-                          className={`w-full h-11 px-3 text-sm snap-center transition-colors ${
-                            expiryUnit === option.value
-                              ? 'bg-fridgit-primary dark:bg-dracula-green text-white dark:text-dracula-bg font-semibold'
-                              : 'text-fridgit-text dark:text-dracula-fg hover:bg-fridgit-surfaceAlt dark:hover:bg-dracula-highlight'
-                          }`}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
+                    <div className="relative">
+                      <div className="pointer-events-none absolute inset-x-0 top-0 h-8 rounded-t-xl bg-gradient-to-b from-fridgit-bg dark:from-dracula-bg to-transparent z-10" />
+                      <div className="pointer-events-none absolute inset-x-2 top-1/2 -translate-y-1/2 h-11 rounded-xl border border-fridgit-primary/20 dark:border-dracula-green/25 bg-fridgit-primary/5 dark:bg-dracula-green/10 z-10" />
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 rounded-b-xl bg-gradient-to-t from-fridgit-bg dark:from-dracula-bg to-transparent z-10" />
+                      <div className="h-36 overflow-y-auto rounded-xl border border-fridgit-border dark:border-dracula-line bg-white/80 dark:bg-dracula-surface snap-y snap-mandatory shadow-inner">
+                        {expiryUnitOptions.map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => setExpiryUnit(option.value)}
+                            className={`w-full h-11 px-3 text-sm snap-center transition-all duration-200 ${
+                              expiryUnit === option.value
+                                ? 'bg-fridgit-primary dark:bg-dracula-green text-white dark:text-dracula-bg font-semibold opacity-100 scale-[1.02]'
+                                : 'text-fridgit-text dark:text-dracula-fg opacity-45 hover:opacity-70 hover:bg-fridgit-surfaceAlt/70 dark:hover:bg-dracula-highlight/70'
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
