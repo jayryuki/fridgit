@@ -16,34 +16,32 @@ import ShoppingList from './pages/ShoppingList.jsx';
 import RecipesPage from './pages/Recipes.jsx';
 import SettingsPage from './pages/Settings.jsx';
 
+// Auth mode context so any component can check secure vs insecure
 const AuthModeContext = createContext({ secure: true });
 export const useAuthMode = () => useContext(AuthModeContext);
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, secureMode }) {
   const { isAuthenticated, loading } = useAuth();
   if (loading) return <div className="flex items-center justify-center h-screen text-fridgit-textMuted">Loading...</div>;
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  if (!isAuthenticated) {
+    return <Navigate to={secureMode ? '/login' : '/pick-user'} />;
+  }
+  return children;
 }
 
 function AppRoutes() {
   const [configured, setConfigured] = useState(null);
-  const [secureMode, setSecureMode] = useState(null);
+  const [secureMode, setSecureMode] = useState(true);
+  const [modeLoaded, setModeLoaded] = useState(false);
 
   useEffect(() => {
-    api.get('/setup/status')
-      .then(res => setConfigured(res.data.configured))
-      .catch(() => setConfigured(false));
+    Promise.all([
+      api.get('/setup/status').then(res => setConfigured(res.data.configured)).catch(() => setConfigured(false)),
+      api.get('/auth/mode').then(res => setSecureMode(res.data.secure)).catch(() => setSecureMode(true)),
+    ]).finally(() => setModeLoaded(true));
   }, []);
 
-  useEffect(() => {
-    if (configured) {
-      api.get('/auth/mode')
-        .then(res => setSecureMode(res.data.secure))
-        .catch(() => setSecureMode(true));
-    }
-  }, [configured]);
-
-  if (configured === null || (configured && secureMode === null)) {
+  if (configured === null || !modeLoaded) {
     return <div className="flex items-center justify-center h-screen text-fridgit-textMuted">Loading...</div>;
   }
 
@@ -64,14 +62,14 @@ function AppRoutes() {
             <Route path="/register" element={<Register />} />
           </>
         ) : (
-          <Route path="/login" element={<GuestPicker />} />
+          <Route path="/pick-user" element={<GuestPicker />} />
         )}
-        <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-        <Route path="/fridge" element={<ProtectedRoute><FridgePage /></ProtectedRoute>} />
-        <Route path="/new-item" element={<ProtectedRoute><NewItem /></ProtectedRoute>} />
-        <Route path="/shopping" element={<ProtectedRoute><ShoppingList /></ProtectedRoute>} />
-        <Route path="/recipes" element={<ProtectedRoute><RecipesPage /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+        <Route path="/home" element={<ProtectedRoute secureMode={secureMode}><HomePage /></ProtectedRoute>} />
+        <Route path="/fridge" element={<ProtectedRoute secureMode={secureMode}><FridgePage /></ProtectedRoute>} />
+        <Route path="/new-item" element={<ProtectedRoute secureMode={secureMode}><NewItem /></ProtectedRoute>} />
+        <Route path="/shopping" element={<ProtectedRoute secureMode={secureMode}><ShoppingList /></ProtectedRoute>} />
+        <Route path="/recipes" element={<ProtectedRoute secureMode={secureMode}><RecipesPage /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute secureMode={secureMode}><SettingsPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/home" />} />
       </Routes>
     </AuthModeContext.Provider>
