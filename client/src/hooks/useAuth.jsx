@@ -1,1 +1,80 @@
-aW1wb3J0IHsgY3JlYXRlQ29udGV4dCwgdXNlQ29udGV4dCwgdXNlU3RhdGUsIHVzZUVmZmVjdCB9IGZyb20gJ3JlYWN0JzsKaW1wb3J0IGFwaSBmcm9tICcuLi9zZXJ2aWNlcy9hcGkuanMnOwoKY29uc3QgQXV0aENvbnRleHQgPSBjcmVhdGVDb250ZXh0KG51bGwpOwoKZXhwb3J0IGZ1bmN0aW9uIEF1dGhQcm92aWRlcih7IGNoaWxkcmVuIH0pIHsKICBjb25zdCBbdXNlciwgc2V0VXNlcl0gPSB1c2VTdGF0ZSgoKSA9PiB7CiAgICBjb25zdCBzYXZlZCA9IGxvY2FsU3RvcmFnZS5nZXRJdGVtKCdmcmlkZ2l0X3VzZXInKTsKICAgIHJldHVybiBzYXZlZCA/IEpTT04ucGFyc2Uoc2F2ZWQpIDogbnVsbDsKICB9KTsKICBjb25zdCBbdG9rZW4sIHNldFRva2VuXSA9IHVzZVN0YXRlKCgpID0+IGxvY2FsU3RvcmFnZS5nZXRJdGVtKCdmcmlkZ2l0X3Rva2VuJykpOwogIGNvbnN0IFtsb2FkaW5nLCBzZXRMb2FkaW5nXSA9IHVzZVN0YXRlKHRydWUpOwoKICB1c2VFZmZlY3QoKCkgPT4gewogICAgaWYgKHRva2VuKSB7CiAgICAgIGFwaS5nZXQoJy9hdXRoL21lJykKICAgICAgICAudGhlbihyZXMgPT4gewogICAgICAgICAgc2V0VXNlcihyZXMuZGF0YSk7CiAgICAgICAgICBsb2NhbFN0b3JhZ2Uuc2V0SXRlbSgnZnJpZGdpdF91c2VyJywgSlNPTi5zdHJpbmdpZnkocmVzLmRhdGEpKTsKICAgICAgICB9KQogICAgICAgIC5jYXRjaCgoKSA9PiB7CiAgICAgICAgICBsb2dvdXQoKTsKICAgICAgICB9KQogICAgICAgIC5maW5hbGx5KCgpID0+IHNldExvYWRpbmcoZmFsc2UpKTsKICAgIH0gZWxzZSB7CiAgICAgIHNldExvYWRpbmcoZmFsc2UpOwogICAgfQogIH0sIFtdKTsKCiAgY29uc3QgbG9naW4gPSBhc3luYyAoZW1haWwsIHBhc3N3b3JkKSA9PiB7CiAgICBjb25zdCByZXMgPSBhd2FpdCBhcGkucG9zdCgnL2F1dGgvbG9naW4nLCB7IGVtYWlsLCBwYXNzd29yZCB9KTsKICAgIGxvY2FsU3RvcmFnZS5zZXRJdGVtKCdmcmlkZ2l0X3Rva2VuJywgcmVzLmRhdGEudG9rZW4pOwogICAgbG9jYWxTdG9yYWdlLnNldEl0ZW0oJ2ZyaWRnaXRfdXNlcicsIEpTT04uc3RyaW5naWZ5KHJlcy5kYXRhLnVzZXIpKTsKICAgIHNldFRva2VuKHJlcy5kYXRhLnRva2VuKTsKICAgIHNldFVzZXIocmVzLmRhdGEudXNlcik7CiAgICByZXR1cm4gcmVzLmRhdGE7CiAgfTsKCiAgY29uc3QgcmVnaXN0ZXIgPSBhc3luYyAobmFtZSwgZW1haWwsIHBhc3N3b3JkKSA9PiB7CiAgICBjb25zdCByZXMgPSBhd2FpdCBhcGkucG9zdCgnL2F1dGgvcmVnaXN0ZXInLCB7IG5hbWUsIGVtYWlsLCBwYXNzd29yZCB9KTsKICAgIGxvY2FsU3RvcmFnZS5zZXRJdGVtKCdmcmlkZ2l0X3Rva2VuJywgcmVzLmRhdGEudG9rZW4pOwogICAgbG9jYWxTdG9yYWdlLnNldEl0ZW0oJ2ZyaWRnaXRfdXNlcicsIEpTT04uc3RyaW5naWZ5KHJlcy5kYXRhLnVzZXIpKTsKICAgIHNldFRva2VuKHJlcy5kYXRhLnRva2VuKTsKICAgIHNldFVzZXIocmVzLmRhdGEudXNlcik7CiAgICByZXR1cm4gcmVzLmRhdGE7CiAgfTsKCiAgY29uc3QgZ3Vlc3RMb2dpbiA9IGFzeW5jICh1c2VySWQpID0+IHsKICAgIGNvbnN0IHJlcyA9IGF3YWl0IGFwaS5wb3N0KCcvYXV0aC9sb2dpbicsIHsgdXNlcklkIH0pOwogICAgbG9jYWxTdG9yYWdlLnNldEl0ZW0oJ2ZyaWRnaXRfdG9rZW4nLCByZXMuZGF0YS50b2tlbik7CiAgICBsb2NhbFN0b3JhZ2Uuc2V0SXRlbSgnZnJpZGdpdF91c2VyJywgSlNPTi5zdHJpbmdpZnkocmVzLmRhdGEudXNlcikpOwogICAgc2V0VG9rZW4ocmVzLmRhdGEudG9rZW4pOwogICAgc2V0VXNlcihyZXMuZGF0YS51c2VyKTsKICAgIHJldHVybiByZXMuZGF0YTsKICB9OwoKICBjb25zdCBndWVzdFJlZ2lzdGVyID0gYXN5bmMgKG5hbWUpID0+IHsKICAgIGNvbnN0IHJlcyA9IGF3YWl0IGFwaS5wb3N0KCcvYXV0aC9yZWdpc3RlcicsIHsgbmFtZSB9KTsKICAgIGxvY2FsU3RvcmFnZS5zZXRJdGVtKCdmcmlkZ2l0X3Rva2VuJywgcmVzLmRhdGEudG9rZW4pOwogICAgbG9jYWxTdG9yYWdlLnNldEl0ZW0oJ2ZyaWRnaXRfdXNlcicsIEpTT04uc3RyaW5naWZ5KHJlcy5kYXRhLnVzZXIpKTsKICAgIHNldFRva2VuKHJlcy5kYXRhLnRva2VuKTsKICAgIHNldFVzZXIocmVzLmRhdGEudXNlcik7CiAgICByZXR1cm4gcmVzLmRhdGE7CiAgfTsKCiAgY29uc3QgbG9nb3V0ID0gKCkgPT4gewogICAgbG9jYWxTdG9yYWdlLnJlbW92ZUl0ZW0oJ2ZyaWRnaXRfdG9rZW4nKTsKICAgIGxvY2FsU3RvcmFnZS5yZW1vdmVJdGVtKCdmcmlkZ2l0X3VzZXInKTsKICAgIHNldFRva2VuKG51bGwpOwogICAgc2V0VXNlcihudWxsKTsKICB9OwoKICByZXR1cm4gKAogICAgPEF1dGhDb250ZXh0LlByb3ZpZGVyIHZhbHVlPXt7IHVzZXIsIHRva2VuLCBsb2FkaW5nLCBsb2dpbiwgcmVnaXN0ZXIsIGd1ZXN0TG9naW4sIGd1ZXN0UmVnaXN0ZXIsIGxvZ291dCwgaXNBdXRoZW50aWNhdGVkOiAhIXRva2VuIH19PgogICAgICB7Y2hpbGRyZW59CiAgICA8L0F1dGhDb250ZXh0LlByb3ZpZGVyPgogICk7Cn0KCmV4cG9ydCBjb25zdCB1c2VBdXRoID0gKCkgPT4gdXNlQ29udGV4dChBdXRoQ29udGV4dCk7Cg==
+import { createContext, useContext, useState, useEffect } from 'react';
+import api from '../services/api.js';
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('fridgit_user');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [token, setToken] = useState(() => localStorage.getItem('fridgit_token'));
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (token) {
+      api.get('/auth/me')
+        .then(res => {
+          setUser(res.data);
+          localStorage.setItem('fridgit_user', JSON.stringify(res.data));
+        })
+        .catch(() => {
+          logout();
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  const login = async (email, password) => {
+    const res = await api.post('/auth/login', { email, password });
+    localStorage.setItem('fridgit_token', res.data.token);
+    localStorage.setItem('fridgit_user', JSON.stringify(res.data.user));
+    setToken(res.data.token);
+    setUser(res.data.user);
+    return res.data;
+  };
+
+  const register = async (name, email, password) => {
+    const res = await api.post('/auth/register', { name, email, password });
+    localStorage.setItem('fridgit_token', res.data.token);
+    localStorage.setItem('fridgit_user', JSON.stringify(res.data.user));
+    setToken(res.data.token);
+    setUser(res.data.user);
+    return res.data;
+  };
+
+  const guestLogin = async (userId) => {
+    const res = await api.post('/auth/login', { userId });
+    localStorage.setItem('fridgit_token', res.data.token);
+    localStorage.setItem('fridgit_user', JSON.stringify(res.data.user));
+    setToken(res.data.token);
+    setUser(res.data.user);
+    return res.data;
+  };
+
+  const guestRegister = async (name) => {
+    const res = await api.post('/auth/register', { name });
+    localStorage.setItem('fridgit_token', res.data.token);
+    localStorage.setItem('fridgit_user', JSON.stringify(res.data.user));
+    setToken(res.data.token);
+    setUser(res.data.user);
+    return res.data;
+  };
+
+  const logout = () => {
+    localStorage.removeItem('fridgit_token');
+    localStorage.removeItem('fridgit_user');
+    setToken(null);
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, token, loading, login, register, guestLogin, guestRegister, logout, isAuthenticated: !!token }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export const useAuth = () => useContext(AuthContext);
