@@ -40,7 +40,7 @@ router.post('/members', async (req, res) => {
     if (existing.rows.length > 0) {
       return res.status(400).json({ error: 'That name is already taken' });
     }
-    const dummyEmail = `${name.trim().toLowerCase().replace(/\\s+/g, '-')}-${Date.now()}@fridgit.local`;
+    const dummyEmail = `${name.trim().toLowerCase().replace(/\s+/g, '-')}-${Date.now()}@fridgit.local`;
     const placeholderHash = await hashPassword(`fridgit-member-${Date.now()}`);
     const result = await db.query(
       'INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING id, name, household_name, created_at',
@@ -86,7 +86,7 @@ router.post('/register', async (req, res) => {
       if (existing.rows.length > 0) {
         return res.status(400).json({ error: 'That name is already taken' });
       }
-      const dummyEmail = `${name.trim().toLowerCase().replace(/\\s+/g, '-')}-${Date.now()}@fridgit.local`;
+      const dummyEmail = `${name.trim().toLowerCase().replace(/\s+/g, '-')}-${Date.now()}@fridgit.local`;
       const placeholderHash = await hashPassword(`fridgit-guest-${Date.now()}`);
       const result = await db.query(
         'INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING id, name, email, household_name, created_at',
