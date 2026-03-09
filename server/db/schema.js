@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS items (
     unit VARCHAR(20) DEFAULT 'count',
     location VARCHAR(20) DEFAULT 'fridge',
     expiry_date DATE,
-    calories INTEGER,
+    calories VARCHAR(50),
     protein VARCHAR(50),
     carbs VARCHAR(50),
     fat VARCHAR(50),
@@ -34,12 +34,6 @@ CREATE TABLE IF NOT EXISTS items (
 CREATE INDEX IF NOT EXISTS idx_items_owner ON items(owner_id);
 CREATE INDEX IF NOT EXISTS idx_items_barcode ON items(barcode);
 CREATE INDEX IF NOT EXISTS idx_items_expiry ON items(expiry_date);
-
-CREATE TABLE IF NOT EXISTS item_shares (
-    item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    PRIMARY KEY (item_id, user_id)
-);
 
 CREATE TABLE IF NOT EXISTS meals (
     id SERIAL PRIMARY KEY,
@@ -91,6 +85,9 @@ CREATE INDEX IF NOT EXISTS idx_settings_user ON settings(user_id);
 
 const MIGRATION_SQL = `
 DO $$ BEGIN
+  ALTER TABLE items ALTER COLUMN calories TYPE VARCHAR(50);
+EXCEPTION WHEN others THEN NULL; END $$;
+DO $$ BEGIN
   ALTER TABLE items ALTER COLUMN protein TYPE VARCHAR(50);
 EXCEPTION WHEN others THEN NULL; END $$;
 DO $$ BEGIN
@@ -108,11 +105,9 @@ EXCEPTION WHEN others THEN NULL; END $$;
 DO $$ BEGIN
   ALTER TABLE items ADD COLUMN image_url TEXT;
 EXCEPTION WHEN duplicate_column THEN NULL; END $$;
-CREATE TABLE IF NOT EXISTS item_shares (
-    item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    PRIMARY KEY (item_id, user_id)
-);
+DO $$ BEGIN
+  ALTER TABLE items ADD COLUMN shared_with JSONB DEFAULT '[]'::jsonb;
+EXCEPTION WHEN duplicate_column THEN NULL; END $$;
 `;
 
 export async function initializeSchema() {
