@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.jsx';
 import Layout from '../components/Layout.jsx';
-import { Plus, AlertTriangle, Package, Clock, X } from 'lucide-react';
+import { Plus, AlertTriangle, Package, Clock, X, Save, Loader2, Trash2 } from 'lucide-react';
 import api from '../services/api.js';
+import toast from 'react-hot-toast';
+import SharePicker from '../components/SharePicker.jsx';
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -22,6 +24,8 @@ function hasNutrition(v) {
   return v != null && v !== '' && v !== false;
 }
 
+const locationOptions = ['fridge', 'freezer', 'pantry', 'counter'];
+
 export default function HomePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -29,8 +33,10 @@ export default function HomePage() {
   const [expiring, setExpiring] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
+  const [editForm, setEditForm] = useState({});
+  const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
+  const fetchItems = () => {
     Promise.all([
       api.get('/items').then((r) => r.data),
       api.get('/items/expiring?days=7').then((r) => r.data),
@@ -41,6 +47,10 @@ export default function HomePage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchItems();
   }, []);
 
   const getDaysUntilExpiry = (date) => {
@@ -52,6 +62,66 @@ export default function HomePage() {
     if (days <= 1) return 'bg-fridgit-dangerPale dark:bg-dracula-red/20 text-fridgit-danger dark:text-dracula-red';
     if (days <= 3) return 'bg-fridgit-accentPale dark:bg-dracula-orange/20 text-fridgit-accent dark:text-dracula-orange';
     return 'bg-fridgit-primaryPale dark:bg-dracula-green/20 text-fridgit-primary dark:text-dracula-green';
+  };
+
+  const openDetail = (item) => {
+    setSelected(item);
+    setEditForm({
+      shared: item.shared || false,
+      shared_with: item.shared_with || [],
+      location: item.location || 'fridge',
+      expiry_date: item.expiry_date ? item.expiry_date.split('T')[0] : '',
+    });
+  };
+
+  const saveDetail = async () => {
+    if (!selected) return;
+    setSaving(true);
+    try {
+      const res = await api.put(`/items/${selected.id}`, editForm);
+      setItems(items.map((i) => (i.id === selected.id ? res.data : i)));
+      setExpiring(expiring.map((i) => (i.id === selected.id ? res.data : i)));
+      setSelected(res.data);
+      toast.success('Item updated');
+    } catch {
+      toast.error('Failed to update');
+    }
+    setSaving(false);
+  };
+
+  const deleteItem = async (id, e) => {
+    if (e) e.stopPropagation();
+    try {
+      await api.delete(`/items/${id}`);
+      setItems(items.filter((i) => i.id !== id));
+      setExpiring(expiring.filter((i) => i.id !== id));
+      if (selected?.id === id) setSelected(null);
+      toast.success('Item removed');
+    } catch {
+      toast.error('Failed to delete');
+    }
+  };
+
+  const consumeItem = async (id, e) => {
+    if (e) e.stopPropagation();
+    try {
+      const res = await api.post(`/items/${id}/consume`, { quantity: 1 });
+      if (res.data.removed) {
+        setItems(items.filter((i) => i.id !== id));
+        setExpiring(expiring.filter((i) => i.id !== id));
+        if (selected?.id === id) setSelected(null);
+      } else {
+        setItems(items.map((i) => (i.id === id ? res.data.item : i)));
+        setExpiring(expiring.map((i) => (i.id === id ? res.data.item : i)));
+        if (selected?.id === id) {
+          setSelected(res.data.item);
+          setEditForm((prev) => ({ ...prev, quantity: res.data.item.quantity }));
+        }
+      }
+      toast.success('Item consumed!');
+    } catch {
+      toast.error('Failed to consume');
+    }
   };
 
   return (
@@ -120,7 +190,7 @@ export default function HomePage() {
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() => setSelected(item)}
+                      onClick={() => openDetail(item)}
                       className="flex w-full items-center gap-3 rounded-2xl border border-fridgit-border bg-white p-3 text-left transition hover:shadow-sm dark:border-dracula-line dark:bg-dracula-surface dark:hover:border-dracula-purple/50"
                     >
                       {item.image_url ? (
@@ -201,7 +271,7 @@ export default function HomePage() {
       {selected && (
         <div className="desktop-modal" onClick={() => setSelected(null)}>
           <div className="absolute inset-0 bg-black/40 dark:bg-black/60" />
-          <div className="desktop-modal-card slide-up" onClick={(e) => e.stopPropagation()}>
+          <div className="desktop-modal-card slide-up max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-serif text-fridgit-text dark:text-dracula-fg">{selected.name}</h2>
               <button onClick={() => setSelected(null)} className="rounded-lg p-1.5 transition-colors hover:bg-fridgit-surfaceAlt dark:hover:bg-dracula-surface">
@@ -220,11 +290,11 @@ export default function HomePage() {
                 )}
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {(hasNutrition(selected.calories) || hasNutrition(selected.protein) || hasNutrition(selected.carbs) || hasNutrition(selected.fat)) && (
                   <div className="rounded-2xl bg-fridgit-bg p-4 dark:bg-dracula-bg">
                     <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-fridgit-textMuted dark:text-dracula-comment">Nutrition (per 100g)</h3>
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
+                    <div className="grid grid-cols-2 gap-3 text-center sm:grid-cols-4">
                       <div>
                         <div className="text-lg font-bold text-fridgit-text dark:text-dracula-fg">{r2(selected.calories)}</div>
                         <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">kcal</div>
@@ -246,10 +316,66 @@ export default function HomePage() {
                 )}
 
                 <div className="flex flex-wrap items-center gap-3 text-sm text-fridgit-textMid dark:text-dracula-fg">
-                  <span className="rounded-md bg-fridgit-primaryPale px-2 py-0.5 text-xs font-semibold capitalize text-fridgit-primary dark:bg-dracula-green/20 dark:text-dracula-green">
-                    {selected.category}
-                  </span>
+                  <span className="rounded-md bg-fridgit-primaryPale px-2 py-0.5 text-xs font-semibold capitalize text-fridgit-primary dark:bg-dracula-green/20 dark:text-dracula-green">{selected.category}</span>
                   <span>Qty: {selected.quantity} {selected.unit}</span>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment">Location</label>
+                    <select
+                      value={editForm.location}
+                      onChange={(e) => setEditForm((prev) => ({ ...prev, location: e.target.value }))}
+                      className="w-full rounded-xl border border-fridgit-border bg-fridgit-bg px-3 py-2.5 capitalize text-fridgit-text dark:border-dracula-line dark:bg-dracula-bg dark:text-dracula-fg"
+                    >
+                      {locationOptions.map((loc) => (
+                        <option key={loc} value={loc} className="capitalize">
+                          {loc}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment">Expiry Date</label>
+                    <input
+                      type="date"
+                      value={editForm.expiry_date}
+                      onChange={(e) => setEditForm((prev) => ({ ...prev, expiry_date: e.target.value }))}
+                      className="w-full rounded-xl border border-fridgit-border bg-fridgit-bg px-3 py-2.5 text-fridgit-text transition focus:border-fridgit-primary dark:border-dracula-line dark:bg-dracula-bg dark:text-dracula-fg dark:focus:border-dracula-green"
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-fridgit-border bg-fridgit-bg p-4 dark:border-dracula-line dark:bg-dracula-bg">
+                  <SharePicker
+                    shared={editForm.shared}
+                    sharedWith={editForm.shared_with || []}
+                    currentUserId={user?.id}
+                    onChange={({ shared, sharedWith }) => setEditForm((prev) => ({ ...prev, shared, shared_with: sharedWith }))}
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={saveDetail}
+                    disabled={saving}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-fridgit-primary py-3 font-semibold text-white transition-colors hover:bg-fridgit-primaryLight disabled:opacity-50 dark:bg-dracula-green dark:text-dracula-bg dark:hover:bg-dracula-green/80"
+                  >
+                    {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                    Save Changes
+                  </button>
+                  <button
+                    onClick={(e) => consumeItem(selected.id, e)}
+                    className="rounded-xl bg-fridgit-accentPale px-4 py-3 font-semibold text-fridgit-accent transition-colors hover:bg-fridgit-accent hover:text-white dark:bg-dracula-orange/20 dark:text-dracula-orange dark:hover:bg-dracula-orange dark:hover:text-dracula-bg"
+                  >
+                    Use
+                  </button>
+                  <button
+                    onClick={(e) => deleteItem(selected.id, e)}
+                    className="rounded-xl bg-fridgit-dangerPale px-4 py-3 text-fridgit-danger transition-colors hover:bg-fridgit-danger hover:text-white dark:bg-dracula-red/20 dark:text-dracula-red dark:hover:bg-dracula-red dark:hover:text-dracula-bg"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </div>
             </div>
