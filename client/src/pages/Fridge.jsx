@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth.jsx';
 import Layout from '../components/Layout.jsx';
-import { Search, Plus, Trash2, X, Save, Loader2, Users, Globe } from 'lucide-react';
+import { Search, Plus, Trash2, X, Save, Loader2 } from 'lucide-react';
 import api from '../services/api.js';
 import toast from 'react-hot-toast';
-import SharePicker from '../components/SharePicker.jsx';
 
 function r2(val) {
   const n = parseFloat(val);
   if (val == null || val === '' || isNaN(n)) return '-';
   return String(Math.round(n * 100) / 100);
 }
-function hasNutrition(v) { return v != null && v !== '' && v !== false; }
+function hasNutrition(v) {
+  return v != null && v !== '' && v !== false;
+}
 
 const categories = [
   { key: 'all', label: 'All', emoji: '\u{1F3E0}' },
@@ -30,7 +30,6 @@ const categories = [
 const locationOptions = ['fridge', 'freezer', 'pantry', 'counter'];
 
 export default function FridgePage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [search, setSearch] = useState('');
@@ -41,18 +40,26 @@ export default function FridgePage() {
   const [saving, setSaving] = useState(false);
 
   const fetchItems = () => {
-    api.get('/items').then(r => setItems(r.data)).catch(() => toast.error('Failed to load items')).finally(() => setLoading(false));
+    api
+      .get('/items')
+      .then((r) => setItems(r.data))
+      .catch(() => toast.error('Failed to load items'))
+      .finally(() => setLoading(false));
   };
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => {
+    fetchItems();
+  }, []);
 
   const deleteItem = async (id, e) => {
     if (e) e.stopPropagation();
     try {
       await api.delete(`/items/${id}`);
-      setItems(items.filter(i => i.id !== id));
+      setItems(items.filter((i) => i.id !== id));
       if (selected?.id === id) setSelected(null);
       toast.success('Item removed');
-    } catch { toast.error('Failed to delete'); }
+    } catch {
+      toast.error('Failed to delete');
+    }
   };
 
   const consumeItem = async (id, e) => {
@@ -60,49 +67,45 @@ export default function FridgePage() {
     try {
       const res = await api.post(`/items/${id}/consume`, { quantity: 1 });
       if (res.data.removed) {
-        setItems(items.filter(i => i.id !== id));
+        setItems(items.filter((i) => i.id !== id));
         if (selected?.id === id) setSelected(null);
       } else {
-        setItems(items.map(i => i.id === id ? res.data.item : i));
+        setItems(items.map((i) => (i.id === id ? res.data.item : i)));
         if (selected?.id === id) {
           setSelected(res.data.item);
-          setEditForm(prev => ({ ...prev, quantity: res.data.item.quantity }));
+          setEditForm((prev) => ({ ...prev, quantity: res.data.item.quantity }));
         }
       }
       toast.success('Item consumed!');
-    } catch { toast.error('Failed to consume'); }
+    } catch {
+      toast.error('Failed to consume');
+    }
   };
 
-  const openDetail = async (item) => {
+  const openDetail = (item) => {
     setSelected(item);
     setEditForm({
       shared: item.shared || false,
       location: item.location || 'fridge',
       expiry_date: item.expiry_date ? item.expiry_date.split('T')[0] : '',
-      shared_with: [],
     });
-    try {
-      const res = await api.get(`/items/${item.id}/shares`);
-      setEditForm(prev => ({ ...prev, shared_with: res.data }));
-    } catch {}
   };
 
   const saveDetail = async () => {
     if (!selected) return;
     setSaving(true);
     try {
-      const res = await api.put(`/items/${selected.id}`, {
-        ...editForm,
-        shared_with: editForm.shared_with,
-      });
-      setItems(items.map(i => i.id === selected.id ? res.data : i));
+      const res = await api.put(`/items/${selected.id}`, editForm);
+      setItems(items.map((i) => (i.id === selected.id ? res.data : i)));
       setSelected(res.data);
       toast.success('Item updated');
-    } catch { toast.error('Failed to update'); }
+    } catch {
+      toast.error('Failed to update');
+    }
     setSaving(false);
   };
 
-  const filtered = items.filter(item => {
+  const filtered = items.filter((item) => {
     const matchCat = category === 'all' || item.category === category;
     const matchSearch = !search || item.name.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
@@ -116,182 +119,208 @@ export default function FridgePage() {
   const getExpiryBadge = (date) => {
     const days = getDaysUntilExpiry(date);
     if (days === null) return null;
-    if (days <= 0) return <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-fridgit-dangerPale dark:bg-dracula-red/20 text-fridgit-danger dark:text-dracula-red">Expired</span>;
-    if (days <= 3) return <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-fridgit-accentPale dark:bg-dracula-orange/20 text-fridgit-accent dark:text-dracula-orange">{days}d left</span>;
-    if (days <= 7) return <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-fridgit-primaryPale dark:bg-dracula-green/20 text-fridgit-primary dark:text-dracula-green">{days}d left</span>;
+    if (days <= 0) return <span className="rounded-md bg-fridgit-dangerPale px-1.5 py-0.5 text-[10px] font-bold text-fridgit-danger dark:bg-dracula-red/20 dark:text-dracula-red">Expired</span>;
+    if (days <= 3) return <span className="rounded-md bg-fridgit-accentPale px-1.5 py-0.5 text-[10px] font-bold text-fridgit-accent dark:bg-dracula-orange/20 dark:text-dracula-orange">{days}d left</span>;
+    if (days <= 7) return <span className="rounded-md bg-fridgit-primaryPale px-1.5 py-0.5 text-[10px] font-bold text-fridgit-primary dark:bg-dracula-green/20 dark:text-dracula-green">{days}d left</span>;
     return null;
   };
 
   return (
     <Layout>
-      <div className="slide-up">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-serif text-fridgit-text dark:text-dracula-fg">My Fridge</h1>
-          <button onClick={() => navigate('/new-item')} className="w-10 h-10 rounded-xl bg-fridgit-primary dark:bg-dracula-green text-white dark:text-dracula-bg flex items-center justify-center hover:bg-fridgit-primaryLight dark:hover:bg-dracula-green/80 transition-colors">
-            <Plus size={20} />
-          </button>
-        </div>
-
-        {/* Search */}
-        <div className="relative mb-4">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-fridgit-textMuted dark:text-dracula-comment" />
-          <input type="text" placeholder="Search items..." value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-fridgit-border dark:border-dracula-line bg-white dark:bg-dracula-surface text-fridgit-text dark:text-dracula-fg placeholder:text-fridgit-textMuted dark:placeholder:text-dracula-comment focus:border-fridgit-primary dark:focus:border-dracula-green focus:ring-1 focus:ring-fridgit-primary dark:focus:ring-dracula-green transition" />
-        </div>
-
-        {/* Category tabs */}
-        <div className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
-          {categories.map(cat => (
-            <button key={cat.key} onClick={() => setCategory(cat.key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                category === cat.key
-                  ? 'bg-fridgit-primary dark:bg-dracula-green text-white dark:text-dracula-bg'
-                  : 'bg-white dark:bg-dracula-surface text-fridgit-textMid dark:text-dracula-fg border border-fridgit-border dark:border-dracula-line hover:bg-fridgit-primaryPale dark:hover:bg-dracula-green/10'
-              }`}>
-              <span>{cat.emoji}</span>
-              {cat.label}
+      <div className="page-stack slide-up">
+        <section className="hero-card">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h1 className="text-3xl font-serif text-fridgit-text dark:text-dracula-fg sm:text-[2rem]">My Fridge</h1>
+              <p className="mt-2 text-sm text-fridgit-textMuted dark:text-dracula-comment sm:text-base">
+                Search, filter, and manage your inventory comfortably on desktop or mobile.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/new-item')}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-fridgit-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-fridgit-primaryLight dark:bg-dracula-green dark:text-dracula-bg dark:hover:bg-dracula-green/80"
+            >
+              <Plus size={18} />
+              Add item
             </button>
-          ))}
-        </div>
+          </div>
+        </section>
 
-        {/* Items grid */}
-        {loading ? (
-          <div className="text-center py-12 text-fridgit-textMuted dark:text-dracula-comment">Loading...</div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-fridgit-textMuted dark:text-dracula-comment">No items found</p>
-            <button onClick={() => navigate('/new-item')} className="mt-3 text-fridgit-primary dark:text-dracula-green font-semibold text-sm hover:underline">Add your first item</button>
+        <section className="panel-section">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+            <div className="relative">
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-fridgit-textMuted dark:text-dracula-comment" />
+              <input
+                type="text"
+                placeholder="Search items..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-xl border border-fridgit-border bg-white py-3 pl-10 pr-4 text-fridgit-text transition placeholder:text-fridgit-textMuted focus:border-fridgit-primary focus:ring-1 focus:ring-fridgit-primary dark:border-dracula-line dark:bg-dracula-surface dark:text-dracula-fg dark:placeholder:text-dracula-comment dark:focus:border-dracula-green dark:focus:ring-dracula-green"
+              />
+            </div>
+
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide lg:max-w-[540px] lg:justify-end">
+              {categories.map((cat) => (
+                <button
+                  key={cat.key}
+                  onClick={() => setCategory(cat.key)}
+                  className={`whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors ${
+                    category === cat.key
+                      ? 'bg-fridgit-primary text-white dark:bg-dracula-green dark:text-dracula-bg'
+                      : 'border border-fridgit-border bg-white text-fridgit-textMid hover:bg-fridgit-primaryPale dark:border-dracula-line dark:bg-dracula-surface dark:text-dracula-fg dark:hover:bg-dracula-green/10'
+                  }`}
+                >
+                  <span className="mr-1.5">{cat.emoji}</span>
+                  {cat.label}
+                </button>
+              ))}
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {filtered.map(item => (
-              <div key={item.id} onClick={() => openDetail(item)}
-                className="bg-white dark:bg-dracula-surface rounded-xl border border-fridgit-border dark:border-dracula-line p-3 relative group cursor-pointer hover:shadow-md dark:hover:border-dracula-purple/50 transition-all">
-                <div className="flex items-start justify-between mb-2">
-                  {item.image_url ? (
-                    <img src={item.image_url} alt={item.name} className="w-12 h-12 rounded-lg object-cover" />
-                  ) : (
-                    <span className="text-3xl">{item.emoji || '\u{1F4E6}'}</span>
-                  )}
-                  {getExpiryBadge(item.expiry_date)}
+        </section>
+
+        <section>
+          {loading ? (
+            <div className="py-16 text-center text-fridgit-textMuted dark:text-dracula-comment">Loading...</div>
+          ) : filtered.length === 0 ? (
+            <div className="panel-section text-center">
+              <p className="text-fridgit-textMuted dark:text-dracula-comment">No items found</p>
+              <button onClick={() => navigate('/new-item')} className="mt-3 text-sm font-semibold text-fridgit-primary hover:underline dark:text-dracula-green">
+                Add your first item
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              {filtered.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => openDetail(item)}
+                  className="group cursor-pointer rounded-2xl border border-fridgit-border bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-dracula-line dark:bg-dracula-surface dark:hover:border-dracula-purple/50"
+                >
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    {item.image_url ? (
+                      <img src={item.image_url} alt={item.name} className="h-16 w-16 rounded-xl object-cover" />
+                    ) : (
+                      <span className="flex h-16 w-16 items-center justify-center rounded-xl bg-fridgit-surfaceAlt text-3xl dark:bg-dracula-bg">{item.emoji || '\u{1F4E6}'}</span>
+                    )}
+                    {getExpiryBadge(item.expiry_date)}
+                  </div>
+                  <h3 className="truncate text-base font-semibold text-fridgit-text dark:text-dracula-fg">{item.name}</h3>
+                  <p className="mt-1 text-sm text-fridgit-textMuted dark:text-dracula-comment">Qty: {item.quantity} {item.unit}</p>
+                  {hasNutrition(item.calories) ? <p className="text-sm text-fridgit-textMuted dark:text-dracula-comment">{r2(item.calories)} kcal/100g</p> : null}
+                  <div className="mt-4 flex gap-2">
+                    <button onClick={(e) => consumeItem(item.id, e)} className="flex-1 rounded-lg bg-fridgit-accentPale px-3 py-2 text-sm font-medium text-fridgit-accent transition-colors hover:bg-fridgit-accent hover:text-white dark:bg-dracula-orange/20 dark:text-dracula-orange dark:hover:bg-dracula-orange dark:hover:text-dracula-bg">
+                      Use
+                    </button>
+                    <button onClick={(e) => deleteItem(item.id, e)} className="rounded-lg bg-fridgit-dangerPale px-3 py-2 text-fridgit-danger transition-colors hover:bg-fridgit-danger hover:text-white dark:bg-dracula-red/20 dark:text-dracula-red dark:hover:bg-dracula-red dark:hover:text-dracula-bg">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
-                <h3 className="font-medium text-fridgit-text dark:text-dracula-fg text-sm truncate">{item.name}</h3>
-                <p className="text-xs text-fridgit-textMuted dark:text-dracula-comment mt-0.5">Qty: {item.quantity} {item.unit}</p>
-                {hasNutrition(item.calories) ? <p className="text-xs text-fridgit-textMuted dark:text-dracula-comment">{r2(item.calories)} kcal/100g</p> : null}
-                <div className="flex gap-1 mt-2">
-                  <button onClick={(e) => consumeItem(item.id, e)} className="flex-1 text-xs py-1.5 rounded-lg bg-fridgit-accentPale dark:bg-dracula-orange/20 text-fridgit-accent dark:text-dracula-orange font-medium hover:bg-fridgit-accent hover:text-white dark:hover:bg-dracula-orange dark:hover:text-dracula-bg transition-colors">
-                    Use
-                  </button>
-                  <button onClick={(e) => deleteItem(item.id, e)} className="px-2 py-1.5 rounded-lg bg-fridgit-dangerPale dark:bg-dracula-red/20 text-fridgit-danger dark:text-dracula-red hover:bg-fridgit-danger hover:text-white dark:hover:bg-dracula-red dark:hover:text-dracula-bg transition-colors">
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </section>
       </div>
 
-      {/* Item Detail Drawer */}
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center" onClick={() => setSelected(null)}>
+        <div className="desktop-modal" onClick={() => setSelected(null)}>
           <div className="absolute inset-0 bg-black/40 dark:bg-black/60" />
-          <div className="relative w-full max-w-lg bg-white dark:bg-dracula-currentLine rounded-t-2xl md:rounded-2xl p-5 pb-8 md:pb-5 slide-up md:animate-none md:scale-100 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            {/* Close button */}
-            <div className="flex items-center justify-between mb-4">
+          <div className="desktop-modal-card slide-up max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-serif text-fridgit-text dark:text-dracula-fg">{selected.name}</h2>
-              <button onClick={() => setSelected(null)} className="p-1.5 rounded-lg hover:bg-fridgit-surfaceAlt dark:hover:bg-dracula-surface transition-colors">
+              <button onClick={() => setSelected(null)} className="rounded-lg p-1.5 transition-colors hover:bg-fridgit-surfaceAlt dark:hover:bg-dracula-surface">
                 <X size={20} className="text-fridgit-textMuted dark:text-dracula-comment" />
               </button>
             </div>
 
-            {/* Image or emoji */}
-            <div className="flex justify-center mb-4">
-              {selected.image_url ? (
-                <img src={selected.image_url} alt={selected.name} className="w-32 h-32 rounded-xl object-cover border border-fridgit-border dark:border-dracula-line" />
-              ) : (
-                <div className="w-32 h-32 rounded-xl bg-fridgit-surfaceAlt dark:bg-dracula-surface flex items-center justify-center">
-                  <span className="text-6xl">{selected.emoji || '\u{1F4E6}'}</span>
+            <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-start">
+              <div className="flex justify-center lg:justify-start">
+                {selected.image_url ? (
+                  <img src={selected.image_url} alt={selected.name} className="h-40 w-40 rounded-2xl border border-fridgit-border object-cover dark:border-dracula-line lg:h-52 lg:w-52" />
+                ) : (
+                  <div className="flex h-40 w-40 items-center justify-center rounded-2xl bg-fridgit-surfaceAlt dark:bg-dracula-surface lg:h-52 lg:w-52">
+                    <span className="text-7xl">{selected.emoji || '\u{1F4E6}'}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-5">
+                {(hasNutrition(selected.calories) || hasNutrition(selected.protein) || hasNutrition(selected.carbs) || hasNutrition(selected.fat)) && (
+                  <div className="rounded-2xl bg-fridgit-bg p-4 dark:bg-dracula-bg">
+                    <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-fridgit-textMuted dark:text-dracula-comment">Nutrition (per 100g)</h3>
+                    <div className="grid grid-cols-2 gap-3 text-center sm:grid-cols-4">
+                      <div>
+                        <div className="text-lg font-bold text-fridgit-text dark:text-dracula-fg">{r2(selected.calories)}</div>
+                        <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">kcal</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-fridgit-primary dark:text-dracula-green">{r2(selected.protein)}</div>
+                        <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">Protein</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-fridgit-accent dark:text-dracula-orange">{r2(selected.carbs)}</div>
+                        <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">Carbs</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-fridgit-danger dark:text-dracula-red">{r2(selected.fat)}</div>
+                        <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">Fat</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-wrap items-center gap-3 text-sm text-fridgit-textMid dark:text-dracula-fg">
+                  <span className="rounded-md bg-fridgit-primaryPale px-2 py-0.5 text-xs font-semibold capitalize text-fridgit-primary dark:bg-dracula-green/20 dark:text-dracula-green">{selected.category}</span>
+                  <span>Qty: {selected.quantity} {selected.unit}</span>
                 </div>
-              )}
-            </div>
 
-            {/* Nutrition */}
-            {(hasNutrition(selected.calories) || hasNutrition(selected.protein) || hasNutrition(selected.carbs) || hasNutrition(selected.fat)) && (
-              <div className="bg-fridgit-bg dark:bg-dracula-bg rounded-xl p-3 mb-4">
-                <h3 className="text-xs font-semibold text-fridgit-textMuted dark:text-dracula-comment mb-2 uppercase tracking-wide">Nutrition (per 100g)</h3>
-                <div className="grid grid-cols-4 gap-2 text-center">
+                <div className="grid gap-4 lg:grid-cols-2">
                   <div>
-                    <div className="text-lg font-bold text-fridgit-text dark:text-dracula-fg">{r2(selected.calories)}</div>
-                    <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">kcal</div>
+                    <label className="mb-1 block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment">Location</label>
+                    <select
+                      value={editForm.location}
+                      onChange={(e) => setEditForm((prev) => ({ ...prev, location: e.target.value }))}
+                      className="w-full rounded-xl border border-fridgit-border bg-fridgit-bg px-3 py-2.5 capitalize text-fridgit-text dark:border-dracula-line dark:bg-dracula-bg dark:text-dracula-fg"
+                    >
+                      {locationOptions.map((loc) => (
+                        <option key={loc} value={loc} className="capitalize">
+                          {loc}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-fridgit-primary dark:text-dracula-green">{r2(selected.protein)}</div>
-                    <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">Protein</div>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-fridgit-accent dark:text-dracula-orange">{r2(selected.carbs)}</div>
-                    <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">Carbs</div>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-fridgit-danger dark:text-dracula-red">{r2(selected.fat)}</div>
-                    <div className="text-[10px] text-fridgit-textMuted dark:text-dracula-comment">Fat</div>
+                    <label className="mb-1 block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment">Expiry Date</label>
+                    <input
+                      type="date"
+                      value={editForm.expiry_date}
+                      onChange={(e) => setEditForm((prev) => ({ ...prev, expiry_date: e.target.value }))}
+                      className="w-full rounded-xl border border-fridgit-border bg-fridgit-bg px-3 py-2.5 text-fridgit-text transition focus:border-fridgit-primary dark:border-dracula-line dark:bg-dracula-bg dark:text-dracula-fg dark:focus:border-dracula-green"
+                    />
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* Info row */}
-            <div className="flex items-center gap-3 text-sm text-fridgit-textMid dark:text-dracula-fg mb-4">
-              <span className="bg-fridgit-primaryPale dark:bg-dracula-green/20 text-fridgit-primary dark:text-dracula-green px-2 py-0.5 rounded-md text-xs font-semibold capitalize">{selected.category}</span>
-              <span>Qty: {selected.quantity} {selected.unit}</span>
-            </div>
+                <div className="flex items-center justify-between rounded-2xl border border-fridgit-border bg-fridgit-bg px-4 py-3 dark:border-dracula-line dark:bg-dracula-bg">
+                  <span className="text-sm font-medium text-fridgit-textMid dark:text-dracula-comment">Shared with household</span>
+                  <button
+                    type="button"
+                    onClick={() => setEditForm((prev) => ({ ...prev, shared: !prev.shared }))}
+                    className={`h-6 w-12 rounded-full transition-colors ${editForm.shared ? 'bg-fridgit-primary dark:bg-dracula-green' : 'bg-fridgit-border dark:bg-dracula-line'}`}
+                  >
+                    <div className={`h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${editForm.shared ? 'translate-x-6' : 'translate-x-0.5'}`} />
+                  </button>
+                </div>
 
-            {/* Editable fields */}
-            <div className="space-y-3 mb-4">
-              {/* Sharing */}
-              <SharePicker
-                shared={editForm.shared}
-                sharedWith={editForm.shared_with || []}
-                currentUserId={user?.id}
-                onChange={({ shared, sharedWith }) => setEditForm(prev => ({ ...prev, shared, shared_with: sharedWith }))}
-              />
-
-              {/* Location */}
-              <div>
-                <label className="block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment mb-1">Location</label>
-                <select value={editForm.location} onChange={e => setEditForm(prev => ({ ...prev, location: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-xl border border-fridgit-border dark:border-dracula-line bg-fridgit-bg dark:bg-dracula-bg text-fridgit-text dark:text-dracula-fg capitalize">
-                  {locationOptions.map(loc => <option key={loc} value={loc} className="capitalize">{loc}</option>)}
-                </select>
-              </div>
-
-              {/* Expiry date */}
-              <div>
-                <label className="block text-sm font-medium text-fridgit-textMid dark:text-dracula-comment mb-1">Expiry Date</label>
-                <input type="date" value={editForm.expiry_date} onChange={e => setEditForm(prev => ({ ...prev, expiry_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-xl border border-fridgit-border dark:border-dracula-line bg-fridgit-bg dark:bg-dracula-bg text-fridgit-text dark:text-dracula-fg focus:border-fridgit-primary dark:focus:border-dracula-green transition" />
+                <button
+                  onClick={saveDetail}
+                  disabled={saving}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-fridgit-primary py-3 font-semibold text-white transition-colors hover:bg-fridgit-primaryLight disabled:opacity-50 dark:bg-dracula-green dark:text-dracula-bg dark:hover:bg-dracula-green/80"
+                >
+                  {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                  Save Changes
+                </button>
               </div>
             </div>
-
-            {/* Action buttons */}
-            <div className="flex gap-2 mb-3">
-              <button onClick={(e) => consumeItem(selected.id, e)}
-                className="flex-1 py-2.5 rounded-xl bg-fridgit-accentPale dark:bg-dracula-orange/20 text-fridgit-accent dark:text-dracula-orange font-semibold hover:bg-fridgit-accent hover:text-white dark:hover:bg-dracula-orange dark:hover:text-dracula-bg transition-colors">
-                Use 1
-              </button>
-              <button onClick={(e) => deleteItem(selected.id, e)}
-                className="px-4 py-2.5 rounded-xl bg-fridgit-dangerPale dark:bg-dracula-red/20 text-fridgit-danger dark:text-dracula-red hover:bg-fridgit-danger hover:text-white dark:hover:bg-dracula-red dark:hover:text-dracula-bg transition-colors">
-                <Trash2 size={18} />
-              </button>
-            </div>
-
-            {/* Save */}
-            <button onClick={saveDetail} disabled={saving}
-              className="w-full py-3 rounded-xl bg-fridgit-primary dark:bg-dracula-green text-white dark:text-dracula-bg font-semibold hover:bg-fridgit-primaryLight dark:hover:bg-dracula-green/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
-              {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-              Save Changes
-            </button>
           </div>
         </div>
       )}
