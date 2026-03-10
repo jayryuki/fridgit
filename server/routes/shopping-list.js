@@ -62,12 +62,18 @@ router.delete('/', async (req, res) => {
 
 router.post('/auto-generate', async (req, res) => {
   try {
+    // Only add items that are expiring within 3 days or already expired
+    // Scoped to items the user owns (not all shared items globally)
     const expiring = await db.query(
-      `SELECT name FROM items WHERE (owner_id = $1 OR shared = true) AND (quantity < 2 OR expiry_date <= CURRENT_DATE + INTERVAL '3 days')`,
+      `SELECT name FROM items
+       WHERE owner_id = $1
+         AND expiry_date IS NOT NULL
+         AND expiry_date <= CURRENT_DATE + INTERVAL '3 days'`,
       [req.user.userId]
     );
     const results = [];
     for (const item of expiring.rows) {
+      // Skip if already on the shopping list (unpurchased)
       const existing = await db.query(
         'SELECT id FROM shopping_list WHERE user_id = $1 AND item_name = $2 AND purchased = false',
         [req.user.userId, item.name]
