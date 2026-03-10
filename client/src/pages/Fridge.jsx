@@ -1,33 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth.jsx';
+import useItemActions from '../hooks/useItemActions.js';
 import Layout from '../components/Layout.jsx';
 import ItemDetailModal from '../components/ItemDetailModal.jsx';
 import { Search, Plus, Trash2 } from 'lucide-react';
+import { categories } from '../utils/constants.js';
+import { r2, hasNutrition, getDaysUntilExpiry } from '../utils/helpers.js';
 import api from '../services/api.js';
 import toast from 'react-hot-toast';
-import { useAuth } from '../hooks/useAuth.jsx';
-
-function r2(val) {
-  const n = parseFloat(val);
-  if (val == null || val === '' || isNaN(n)) return '-';
-  return String(Math.round(n * 100) / 100);
-}
-function hasNutrition(v) {
-  return v != null && v !== '' && v !== false;
-}
-
-const categories = [
-  { key: 'all', label: 'All', emoji: '\u{1F3E0}' },
-  { key: 'dairy', label: 'Dairy', emoji: '\u{1F95B}' },
-  { key: 'meat', label: 'Meat', emoji: '\u{1F357}' },
-  { key: 'vegetables', label: 'Veggies', emoji: '\u{1F96C}' },
-  { key: 'fruits', label: 'Fruits', emoji: '\u{1F34E}' },
-  { key: 'beverages', label: 'Drinks', emoji: '\u{1F964}' },
-  { key: 'condiments', label: 'Sauces', emoji: '\u{1FAD9}' },
-  { key: 'grains', label: 'Grains', emoji: '\u{1F33E}' },
-  { key: 'snacks', label: 'Snacks', emoji: '\u{1F36A}' },
-  { key: 'other', label: 'Other', emoji: '\u{1F4E6}' },
-];
 
 export default function FridgePage() {
   const navigate = useNavigate();
@@ -36,9 +17,11 @@ export default function FridgePage() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState(null);
-  const [editForm, setEditForm] = useState({});
-  const [saving, setSaving] = useState(false);
+
+  const {
+    selected, setSelected, editForm, setEditForm, saving,
+    openDetail, saveDetail, deleteItem, consumeItem, addToShoppingList,
+  } = useItemActions({ items, setItems });
 
   const fetchItems = () => {
     api
@@ -51,88 +34,35 @@ export default function FridgePage() {
     fetchItems();
   }, []);
 
-  const deleteItem = async (id, e) => {
-    if (e) e.stopPropagation();
-    try {
-      await api.delete(`/items/${id}`);
-      setItems(items.filter((i) => i.id !== id));
-      if (selected?.id === id) setSelected(null);
-      toast.success('Item removed');
-    } catch {
-      toast.error('Failed to delete');
-    }
-  };
-
-  const consumeItem = async (id, e) => {
-    if (e) e.stopPropagation();
-    try {
-      const res = await api.post(`/items/${id}/consume`, { quantity: 1 });
-      if (res.data.removed) {
-        setItems(items.filter((i) => i.id !== id));
-        if (selected?.id === id) setSelected(null);
-      } else {
-        setItems(items.map((i) => (i.id === id ? res.data.item : i)));
-        if (selected?.id === id) {
-          setSelected(res.data.item);
-          setEditForm((prev) => ({ ...prev, quantity: res.data.item.quantity }));
-        }
-      }
-      toast.success('Item consumed!');
-    } catch {
-      toast.error('Failed to consume');
-    }
-  };
-
-  const openDetail = (item) => {
-    setSelected(item);
-    setEditForm({
-      shared: item.shared || false,
-      shared_with: item.shared_with || [],
-      location: item.location || 'fridge',
-      expiry_date: item.expiry_date ? item.expiry_date.split('T')[0] : '',
-    });
-  };
-
-  const saveDetail = async () => {
-    if (!selected) return;
-    setSaving(true);
-    try {
-      const res = await api.put(`/items/${selected.id}`, editForm);
-      setItems(items.map((i) => (i.id === selected.id ? res.data : i)));
-      setSelected(res.data);
-      toast.success('Item updated');
-    } catch {
-      toast.error('Failed to update');
-    }
-    setSaving(false);
-  };
-
-  const addToShoppingList = async (item) => {
-    try {
-      await api.post('/shopping-list', { item_name: item.name });
-      toast.success(`${item.name} added to shopping list`);
-    } catch {
-      toast.error('Failed to add to shopping list');
-    }
-  };
-
   const filtered = items.filter((item) => {
     const matchCat = category === 'all' || item.category === category;
     const matchSearch = !search || item.name.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
   });
 
-  const getDaysUntilExpiry = (date) => {
-    if (!date) return null;
-    return Math.ceil((new Date(date) - new Date()) / (1000 * 60 * 60 * 24));
-  };
-
+  // Returns a JSX badge element — kept local because it renders JSX.
+  // Uses getDaysUntilExpiry from shared helpers.
   const getExpiryBadge = (date) => {
     const days = getDaysUntilExpiry(date);
     if (days === null) return null;
-    if (days <= 0) return <span className="rounded-md bg-fridgit-dangerPale px-1.5 py-0.5 text-[10px] font-bold text-fridgit-danger dark:bg-dracula-red/20 dark:text-dracula-red">Expired</span>;
-    if (days <= 3) return <span className="rounded-md bg-fridgit-accentPale px-1.5 py-0.5 text-[10px] font-bold text-fridgit-accent dark:bg-dracula-orange/20 dark:text-dracula-orange">{days}d left</span>;
-    if (days <= 7) return <span className="rounded-md bg-fridgit-primaryPale px-1.5 py-0.5 text-[10px] font-bold text-fridgit-primary dark:bg-dracula-green/20 dark:text-dracula-green">{days}d left</span>;
+    if (days <= 0)
+      return (
+        <span className="rounded-md bg-fridgit-dangerPale px-1.5 py-0.5 text-[10px] font-bold text-fridgit-danger dark:bg-dracula-red/20 dark:text-dracula-red">
+          Expired
+        </span>
+      );
+    if (days <= 3)
+      return (
+        <span className="rounded-md bg-fridgit-accentPale px-1.5 py-0.5 text-[10px] font-bold text-fridgit-accent dark:bg-dracula-orange/20 dark:text-dracula-orange">
+          {days}d left
+        </span>
+      );
+    if (days <= 7)
+      return (
+        <span className="rounded-md bg-fridgit-primaryPale px-1.5 py-0.5 text-[10px] font-bold text-fridgit-primary dark:bg-dracula-green/20 dark:text-dracula-green">
+          {days}d left
+        </span>
+      );
     return null;
   };
 
