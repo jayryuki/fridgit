@@ -1,6 +1,9 @@
-import { useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Refrigerator, ShoppingCart, UtensilsCrossed, Settings } from 'lucide-react';
+import { Home, Refrigerator, ShoppingCart, UtensilsCrossed, Settings, ArrowLeftRight } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth.jsx';
+import { useAuthMode } from '../App.jsx';
+import { COLORS, getInitials } from '../utils/constants.js';
 
 const navItems = [
   { path: '/home', icon: Home, label: 'Home' },
@@ -17,6 +20,108 @@ function applyDarkMode() {
   } else {
     document.documentElement.classList.remove('dark');
   }
+}
+
+function UserSwitchButton({ variant }) {
+  const { user, logout } = useAuth();
+  const { secure } = useAuthMode();
+  const navigate = useNavigate();
+  const [showTooltip, setShowTooltip] = useState(false);
+  const tooltipRef = useRef(null);
+
+  useEffect(() => {
+    if (!showTooltip) return;
+    const handler = (e) => {
+      if (tooltipRef.current && !tooltipRef.current.contains(e.target)) {
+        setShowTooltip(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+    };
+  }, [showTooltip]);
+
+  const handleSwitch = () => {
+    setShowTooltip(false);
+    logout();
+    navigate(secure ? '/login' : '/pick-user');
+  };
+
+  if (!user) return null;
+
+  const initials = getInitials(user.name || 'U');
+  const colorIndex = (user.name || 'U').charCodeAt(0) % COLORS.length;
+  const bgColor = COLORS[colorIndex];
+
+  if (variant === 'sidebar') {
+    return (
+      <div className="relative mt-auto pt-4 border-t border-fridgit-border/50 dark:border-dracula-line/30" ref={tooltipRef}>
+        <button
+          onClick={() => setShowTooltip(!showTooltip)}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-black/5 dark:hover:bg-dracula-selection/50 transition-all group"
+        >
+          <div className={`w-9 h-9 ${bgColor} rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm`}>
+            {initials}
+          </div>
+          <div className="flex-1 text-left min-w-0">
+            <div className="text-sm font-medium text-fridgit-text dark:text-dracula-fg truncate">{user.name}</div>
+            <div className="text-[11px] text-fridgit-textMuted dark:text-dracula-comment truncate">
+              {user.email || 'Household member'}
+            </div>
+          </div>
+          <ArrowLeftRight size={16} className="text-fridgit-textMuted dark:text-dracula-comment group-hover:text-fridgit-primary dark:group-hover:text-dracula-green transition-colors shrink-0" />
+        </button>
+
+        {showTooltip && (
+          <div className="absolute bottom-full left-4 right-4 mb-2 bg-white dark:bg-dracula-currentLine rounded-xl shadow-lg border border-fridgit-border dark:border-dracula-line overflow-hidden animate-in fade-in slide-in-from-bottom-2 z-50">
+            <button
+              onClick={handleSwitch}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-fridgit-text dark:text-dracula-fg hover:bg-fridgit-bg dark:hover:bg-dracula-selection transition-colors"
+            >
+              <ArrowLeftRight size={16} className="text-fridgit-primary dark:text-dracula-green" />
+              Switch User
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Mobile variant: compact avatar button
+  return (
+    <div className="relative" ref={tooltipRef}>
+      <button
+        onClick={() => setShowTooltip(!showTooltip)}
+        className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-dracula-selection/50 transition-all active:scale-95"
+      >
+        <div className={`w-8 h-8 ${bgColor} rounded-lg flex items-center justify-center text-white font-bold text-xs shadow-sm`}>
+          {initials}
+        </div>
+        <ArrowLeftRight size={14} className="text-fridgit-textMuted dark:text-dracula-comment" />
+      </button>
+
+      {showTooltip && (
+        <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-dracula-currentLine rounded-xl shadow-lg border border-fridgit-border dark:border-dracula-line overflow-hidden z-50">
+          <div className="px-4 py-3 border-b border-fridgit-border/50 dark:border-dracula-line/30">
+            <div className="text-sm font-medium text-fridgit-text dark:text-dracula-fg truncate">{user.name}</div>
+            <div className="text-xs text-fridgit-textMuted dark:text-dracula-comment truncate">
+              {user.email || 'Household member'}
+            </div>
+          </div>
+          <button
+            onClick={handleSwitch}
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-fridgit-text dark:text-dracula-fg hover:bg-fridgit-bg dark:hover:bg-dracula-selection transition-colors"
+          >
+            <ArrowLeftRight size={16} className="text-fridgit-primary dark:text-dracula-green" />
+            Switch User
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function Layout({ children }) {
@@ -58,10 +163,21 @@ export default function Layout({ children }) {
             );
           })}
         </div>
+
+        {/* User Switch - Bottom of Sidebar */}
+        <UserSwitchButton variant="sidebar" />
       </aside>
 
       {/* Main Content Area */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8 pt-6 md:pt-8 transition-all relative">
+        {/* Mobile Top Bar with User Switch */}
+        <div className="md:hidden flex items-center justify-between mb-4">
+          <div className="font-bold text-lg text-fridgit-primary dark:text-dracula-green flex items-center gap-2">
+            <Refrigerator className="w-5 h-5" />
+            <span className="tracking-tight">Fridgit</span>
+          </div>
+          <UserSwitchButton variant="mobile" />
+        </div>
         {children}
       </main>
 
