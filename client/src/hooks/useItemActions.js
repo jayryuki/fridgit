@@ -30,7 +30,7 @@ export default function useItemActions({ items, setItems, expiring, setExpiring 
     if (setExpiring) setExpiring((prev) => prev.filter((i) => i.id !== id));
   };
 
-  // ── public API ─────────────────────────────────────────────────
+  // ── public API ─────────────────────────────────────────────
   const openDetail = (item) => {
     setSelected(item);
     setEditForm({
