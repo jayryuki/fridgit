@@ -22,11 +22,18 @@ export default function ItemDetailModal({
   };
 
   return (
-    <div className="desktop-modal" onClick={onClose}>
+    <div
+      className="desktop-modal"
+      onClick={onClose}
+      /* Prevent ANY touch on the backdrop from scrolling the page behind */
+      onTouchMove={(e) => e.preventDefault()}
+    >
       <div className="absolute inset-0 bg-black/40 dark:bg-black/60" />
       <div
-        className="desktop-modal-card slide-up flex max-h-[85vh] max-h-[85dvh] flex-col sm:max-h-[90vh] sm:max-h-[90dvh]"
+        className="desktop-modal-card slide-up"
         onClick={(e) => e.stopPropagation()}
+        /* Stop the backdrop's touchmove preventDefault from applying inside the card */
+        onTouchMove={(e) => e.stopPropagation()}
       >
         {/* Fixed header */}
         <div className="mb-4 flex shrink-0 items-center justify-between">
@@ -41,8 +48,8 @@ export default function ItemDetailModal({
           </button>
         </div>
 
-        {/* Scrollable body */}
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-safe">
+        {/* Scrollable body — this is the ONLY element that scrolls */}
+        <div className="modal-scroll-body">
           <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-start">
             {/* Image / emoji */}
             <div className="flex justify-center lg:justify-start">
@@ -164,7 +171,7 @@ export default function ItemDetailModal({
               </div>
 
               {/* Action buttons */}
-              <div className="flex gap-3 pb-2">
+              <div className="flex gap-3 pb-4">
                 <button
                   onClick={onSave}
                   disabled={saving}
