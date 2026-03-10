@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.jsx';
-import { LogIn, Loader2, ChefHat } from 'lucide-react';
+import { LogIn, Loader2, Refrigerator } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Login() {
@@ -29,7 +29,7 @@ export default function Login() {
       <div className="w-full max-w-sm slide-up">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-fridgit-primaryPale rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <ChefHat size={32} className="text-fridgit-primary" />
+            <Refrigerator size={32} className="text-fridgit-primary" />
           </div>
           <h1 className="text-3xl font-serif text-fridgit-text">Welcome Back</h1>
           <p className="text-fridgit-textMuted mt-1">Sign in to your Fridgit account</p>
