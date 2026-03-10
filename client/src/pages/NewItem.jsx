@@ -4,22 +4,11 @@ import { useAuth } from '../hooks/useAuth.jsx';
 import Layout from '../components/Layout.jsx';
 import SharePicker from '../components/SharePicker.jsx';
 import { Camera, X, Search, ArrowLeft, Loader2, Package } from 'lucide-react';
+import { categoryOptions, locationOptions } from '../utils/constants.js';
+import { r2, r2Empty, hasNutrition } from '../utils/helpers.js';
 import api from '../services/api.js';
 import toast from 'react-hot-toast';
 
-const categoryOptions = [
-  { key: 'dairy', emoji: '\u{1F95B}', label: 'Dairy' },
-  { key: 'meat', emoji: '\u{1F357}', label: 'Meat' },
-  { key: 'vegetables', emoji: '\u{1F96C}', label: 'Veggies' },
-  { key: 'fruits', emoji: '\u{1F34E}', label: 'Fruits' },
-  { key: 'beverages', emoji: '\u{1F964}', label: 'Drinks' },
-  { key: 'condiments', emoji: '\u{1FAD9}', label: 'Sauces' },
-  { key: 'grains', emoji: '\u{1F33E}', label: 'Grains' },
-  { key: 'snacks', emoji: '\u{1F36A}', label: 'Snacks' },
-  { key: 'other', emoji: '\u{1F4E6}', label: 'Other' },
-];
-
-const locationOptions = ['fridge', 'freezer', 'pantry', 'counter'];
 const expiryNumberOptions = Array.from({ length: 30 }, (_, i) => i + 1);
 const expiryUnitOptions = [
   { value: 'days', label: 'Days' },
@@ -45,15 +34,6 @@ function addToDate(value, unit) {
   if (unit === 'months') date.setMonth(date.getMonth() + value);
   if (unit === 'years') date.setFullYear(date.getFullYear() + value);
   return toDateInputValue(date);
-}
-
-function r2(val) {
-  const n = parseFloat(val);
-  if (val == null || val === '' || isNaN(n)) return '';
-  return String(Math.round(n * 100) / 100);
-}
-function hasNutrition(v) {
-  return v != null && v !== '' && v !== false;
 }
 
 export default function NewItem() {
@@ -186,10 +166,10 @@ export default function NewItem() {
         ...prev,
         name: p.name || prev.name,
         category: p.category || prev.category,
-        calories: p.calories != null ? r2(p.calories) : prev.calories,
-        protein: p.protein != null ? r2(p.protein) : prev.protein,
-        carbs: p.carbs != null ? r2(p.carbs) : prev.carbs,
-        fat: p.fat != null ? r2(p.fat) : prev.fat,
+        calories: p.calories != null ? r2Empty(p.calories) : prev.calories,
+        protein: p.protein != null ? r2Empty(p.protein) : prev.protein,
+        carbs: p.carbs != null ? r2Empty(p.carbs) : prev.carbs,
+        fat: p.fat != null ? r2Empty(p.fat) : prev.fat,
         nutrition_basis: p.nutrition_basis || prev.nutrition_basis,
         emoji: p.emoji || prev.emoji,
         color: p.color || prev.color,
@@ -219,10 +199,10 @@ export default function NewItem() {
       ...prev,
       name: product.name,
       category: product.category,
-      calories: product.calories != null ? r2(product.calories) : prev.calories,
-      protein: product.protein != null ? r2(product.protein) : prev.protein,
-      carbs: product.carbs != null ? r2(product.carbs) : prev.carbs,
-      fat: product.fat != null ? r2(product.fat) : prev.fat,
+      calories: product.calories != null ? r2Empty(product.calories) : prev.calories,
+      protein: product.protein != null ? r2Empty(product.protein) : prev.protein,
+      carbs: product.carbs != null ? r2Empty(product.carbs) : prev.carbs,
+      fat: product.fat != null ? r2Empty(product.fat) : prev.fat,
       nutrition_basis: product.nutrition_basis || prev.nutrition_basis,
       emoji: product.emoji || prev.emoji,
       color: product.color || prev.color,
@@ -245,10 +225,10 @@ export default function NewItem() {
       await api.post('/items', {
         ...form,
         quantity: parseInt(form.quantity) || 1,
-        calories: hasNutrition(form.calories) ? r2(form.calories) : null,
-        protein: hasNutrition(form.protein) ? r2(form.protein) : null,
-        carbs: hasNutrition(form.carbs) ? r2(form.carbs) : null,
-        fat: hasNutrition(form.fat) ? r2(form.fat) : null,
+        calories: hasNutrition(form.calories) ? r2Empty(form.calories) : null,
+        protein: hasNutrition(form.protein) ? r2Empty(form.protein) : null,
+        carbs: hasNutrition(form.carbs) ? r2Empty(form.carbs) : null,
+        fat: hasNutrition(form.fat) ? r2Empty(form.fat) : null,
         expiry_date: form.expiry_date || null,
         image_url: form.image_url || null,
         shared_with: form.shared_with,
