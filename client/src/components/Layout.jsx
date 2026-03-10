@@ -169,7 +169,7 @@ export default function Layout({ children }) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8 pt-6 md:pt-8 transition-all relative">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8 pt-4 md:pt-8 transition-all relative">
         {/* Mobile Top Bar with User Switch */}
         <div className="md:hidden flex items-center justify-between mb-4">
           <div className="font-bold text-lg text-fridgit-primary dark:text-dracula-green flex items-center gap-2">

@@ -80,7 +80,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Toaster position="top-center" toastOptions={{ duration: 3000, style: { borderRadius: '12px', background: '#1A2A1E', color: '#fff', fontSize: '14px' } }} />
+        <Toaster position="top-center" toastOptions={{ duration: 3000, style: { borderRadius: '12px', background: '#1A2A1E', color: '#fff', fontSize: '14px' } }} containerStyle={{ top: 'env(safe-area-inset-top)' }} />
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
