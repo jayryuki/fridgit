@@ -11,10 +11,9 @@ import Register from './pages/Register.jsx';
 import GuestPicker from './pages/GuestPicker.jsx';
 import HomePage from './pages/Home.jsx';
 import FridgePage from './pages/Fridge.jsx';
-import NutritionPage from './pages/Nutrition.jsx';
+import MealPlanningPage from './pages/MealPlanning.jsx';
 import NewItem from './pages/NewItem.jsx';
 import ShoppingList from './pages/ShoppingList.jsx';
-import RecipesPage from './pages/Recipes.jsx';
 import SettingsPage from './pages/Settings.jsx';
 
 // Auth mode context so any component can check secure vs insecure
@@ -67,10 +66,9 @@ function AppRoutes() {
         )}
         <Route path="/home" element={<ProtectedRoute secureMode={secureMode}><HomePage /></ProtectedRoute>} />
         <Route path="/fridge" element={<ProtectedRoute secureMode={secureMode}><FridgePage /></ProtectedRoute>} />
-        <Route path="/nutrition" element={<ProtectedRoute secureMode={secureMode}><NutritionPage /></ProtectedRoute>} />
+        <Route path="/meal-planning" element={<ProtectedRoute secureMode={secureMode}><MealPlanningPage /></ProtectedRoute>} />
         <Route path="/new-item" element={<ProtectedRoute secureMode={secureMode}><NewItem /></ProtectedRoute>} />
         <Route path="/shopping" element={<ProtectedRoute secureMode={secureMode}><ShoppingList /></ProtectedRoute>} />
-        <Route path="/recipes" element={<ProtectedRoute secureMode={secureMode}><RecipesPage /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute secureMode={secureMode}><SettingsPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/home" />} />
       </Routes>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Refrigerator, ShoppingCart, UtensilsCrossed, Settings, ArrowLeftRight, History } from 'lucide-react';
+import { Home, Refrigerator, ShoppingCart, Settings, ArrowLeftRight, UtensilsCrossed } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth.jsx';
 import { useAuthMode } from '../App.jsx';
 import { COLORS, getInitials } from '../utils/constants.js';
@@ -8,9 +8,8 @@ import { COLORS, getInitials } from '../utils/constants.js';
 const navItems = [
   { path: '/home', icon: Home, label: 'Home' },
   { path: '/fridge', icon: Refrigerator, label: 'Fridge' },
-  { path: '/nutrition', icon: History, label: 'Nutrition' },
+  { path: '/meal-planning', icon: UtensilsCrossed, label: 'Meal Planning' },
   { path: '/shopping', icon: ShoppingCart, label: 'Shop' },
-  { path: '/recipes', icon: UtensilsCrossed, label: 'Recipes' },
   { path: '/settings', icon: Settings, label: 'Settings' },
 ];
 
