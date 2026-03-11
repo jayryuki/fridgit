@@ -5,7 +5,7 @@ import useItemActions from "../hooks/useItemActions.js";
 import Layout from "../components/Layout.jsx";
 import ItemDetailModal from "../components/ItemDetailModal.jsx";
 import FridgeItemCard from "../components/FridgeItemCard.jsx";
-import { Search, Plus, List, Grid3X3 } from "lucide-react";
+import { Search, Plus, List, Grid3X3, ChevronDown, X } from "lucide-react";
 import { categories } from "../utils/constants.js";
 import api from "../services/api.js";
 import toast from "react-hot-toast";
@@ -17,7 +17,8 @@ export default function FridgePage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState("detailed"); // 'detailed' | 'compact'
+  const [viewMode, setViewMode] = useState("detailed");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const {
     selected,
@@ -117,7 +118,7 @@ export default function FridgePage() {
               />
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide lg:max-w-[540px] lg:justify-end">
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide lg:hidden">
               {categories.map((cat) => (
                 <button
                   key={cat.key}
@@ -132,6 +133,48 @@ export default function FridgePage() {
                   {cat.label}
                 </button>
               ))}
+            </div>
+
+            <div className="relative hidden lg:block">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center gap-2 rounded-xl border border-fridgit-border bg-white px-4 py-2.5 text-sm font-medium text-fridgit-text dark:border-dracula-line dark:bg-dracula-surface dark:text-dracula-fg hover:border-fridgit-primary dark:hover:border-dracula-green transition-colors min-w-[140px]"
+              >
+                <span>{categories.find((c) => c.key === category)?.emoji}</span>
+                <span>{categories.find((c) => c.key === category)?.label}</span>
+                <ChevronDown
+                  size={16}
+                  className={`ml-auto transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {dropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setDropdownOpen(false)}
+                  />
+                  <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border border-fridgit-border bg-white/90 dark:border-dracula-line dark:bg-dracula-currentLine/90 backdrop-blur-xl shadow-lg overflow-hidden">
+                    {categories.map((cat) => (
+                      <button
+                        key={cat.key}
+                        onClick={() => {
+                          setCategory(cat.key);
+                          setDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-2 px-4 py-2.5 text-left text-sm font-medium transition-colors ${
+                          category === cat.key
+                            ? "bg-fridgit-primary text-white dark:bg-dracula-green dark:text-dracula-bg"
+                            : "text-fridgit-textMid dark:text-dracula-fg hover:bg-fridgit-primaryPale dark:hover:bg-dracula-selection"
+                        }`}
+                      >
+                        <span>{cat.emoji}</span>
+                        <span>{cat.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </section>
