@@ -62,32 +62,28 @@ router.delete('/', async (req, res) => {
 
 router.post('/auto-generate', async (req, res) => {
   try {
-    // Only add items that are expiring within 3 days or already expired
-    // Scoped to items the user owns (not all shared items globally)
-    const expiring = await db.query(
-      `SELECT name FROM items
+    const uid = req.user.userId;
+    
+    // Single query with NOT EXISTS to avoid N+1 queries
+    const result = await db.query(
+      `INSERT INTO shopping_list (user_id, item_name, auto_generated, quantity)
+       SELECT $1, name, true, 1
+       FROM items
        WHERE owner_id = $1
          AND expiry_date IS NOT NULL
-         AND expiry_date <= CURRENT_DATE + INTERVAL '3 days'`,
-      [req.user.userId]
+         AND expiry_date <= CURRENT_DATE + INTERVAL '3 days'
+         AND NOT EXISTS (
+           SELECT 1 FROM shopping_list sl 
+           WHERE sl.user_id = $1 
+             AND sl.item_name = items.name 
+             AND sl.purchased = false
+         )
+       RETURNING *`,
+      [uid]
     );
-    const results = [];
-    for (const item of expiring.rows) {
-      // Skip if already on the shopping list (unpurchased)
-      const existing = await db.query(
-        'SELECT id FROM shopping_list WHERE user_id = $1 AND item_name = $2 AND purchased = false',
-        [req.user.userId, item.name]
-      );
-      if (existing.rows.length === 0) {
-        const result = await db.query(
-          'INSERT INTO shopping_list (user_id, item_name, auto_generated) VALUES ($1, $2, true) RETURNING *',
-          [req.user.userId, item.name]
-        );
-        results.push(result.rows[0]);
-      }
-    }
-    res.json(results);
+    res.json(result.rows);
   } catch (error) {
+    console.error('Auto-generate shopping list error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });

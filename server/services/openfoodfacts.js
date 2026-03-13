@@ -1,3 +1,5 @@
+import { round2 } from '../utils/helpers.js';
+
 const BASE_URL = 'https://world.openfoodfacts.org/api/v2';
 
 export async function lookupBarcode(barcode) {
@@ -24,16 +26,10 @@ export async function searchProducts(query, limit = 10) {
   }
 }
 
-function round2(val) {
-  const n = parseFloat(val);
-  if (isNaN(n)) return 0;
-  return Math.round(n * 100) / 100;
-}
-
 function firstNumeric(...values) {
   for (const value of values) {
     const n = parseFloat(value);
-    if (!Number.isNaN(n)) return round2(n);
+    if (!Number.isNaN(n)) return round2(n) ?? 0;
   }
   return null;
 }

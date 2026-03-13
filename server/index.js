@@ -5,6 +5,7 @@ import fs from 'fs';
 import https from 'https';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -57,6 +58,10 @@ app.use('/api/meals', mealsRouter);
 app.use('/api/recipes', recipesRouter);
 app.use('/api/calories', caloriesRouter);
 app.use('/api/settings', settingsRouter);
+
+// Error handling middleware
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 // Auto-init schema on startup if configured
 if (fs.existsSync(envPath)) {

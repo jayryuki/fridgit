@@ -2,16 +2,10 @@ import express from 'express';
 import db from '../db/index.js';
 import { lookupBarcode, normalizeProduct } from '../services/openfoodfacts.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { round2, validatePositiveInt } from '../utils/helpers.js';
 
 const router = express.Router();
 router.use(authMiddleware);
-
-function round2(val) {
-  if (val === null || val === undefined || val === '') return null;
-  const n = parseFloat(val);
-  if (isNaN(n)) return val;
-  return String(Math.round(n * 100) / 100);
-}
 
 router.get('/', async (req, res) => {
   try {
@@ -29,7 +23,37 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   const { name, barcode, category, quantity, unit, location, expiry_date, calories, protein, carbs, fat, emoji, color, shared, shared_with, image_url } = req.body;
-  let itemData = { name, barcode, category, quantity: quantity || 1, unit: unit || 'count', location: location || 'fridge', expiry_date, calories: round2(calories), protein: round2(protein), carbs: round2(carbs), fat: round2(fat), emoji, color, shared: shared || false, shared_with: JSON.stringify(shared_with || []), image_url: image_url || null };
+  
+  // Basic validation
+  if (!name || !name.trim()) {
+    return res.status(400).json({ error: 'Name is required' });
+  }
+  
+  // Sanitize and validate numeric fields
+  const sanitizedQuantity = Math.max(1, parseInt(quantity) || 1);
+  const validUnits = ['count', 'kg', 'g', 'lb', 'oz', 'l', 'ml', 'cups', 'pieces', 'pack'];
+  const sanitizedUnit = validUnits.includes(unit) ? unit : 'count';
+  const validLocations = ['fridge', 'freezer', 'pantry', 'counter'];
+  const sanitizedLocation = validLocations.includes(location) ? location : 'fridge';
+  
+  let itemData = { 
+    name: name.trim(), 
+    barcode, 
+    category, 
+    quantity: sanitizedQuantity, 
+    unit: sanitizedUnit, 
+    location: sanitizedLocation, 
+    expiry_date, 
+    calories: round2(calories), 
+    protein: round2(protein), 
+    carbs: round2(carbs), 
+    fat: round2(fat), 
+    emoji, 
+    color, 
+    shared: shared || false, 
+    shared_with: JSON.stringify(shared_with || []), 
+    image_url: image_url || null 
+  };
 
   if (barcode && calories == null) {
     const product = await lookupBarcode(barcode);
@@ -113,7 +137,7 @@ router.post('/:id/consume', async (req, res) => {
 });
 
 router.get('/expiring', async (req, res) => {
-  const days = parseInt(req.query.days) || 7;
+  const days = validatePositiveInt(req.query.days, 7, 365);
   try {
     const uid = Number(req.user.userId);
     const result = await db.query(
@@ -122,6 +146,7 @@ router.get('/expiring', async (req, res) => {
     );
     res.json(result.rows);
   } catch (error) {
+    console.error('Expiring items error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
